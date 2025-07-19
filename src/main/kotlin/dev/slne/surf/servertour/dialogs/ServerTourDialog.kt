@@ -12,7 +12,7 @@ import java.util.*
 
 fun serverTourDialog(owner: UUID) = dialog {
     base {
-        title { primary("Server Tour") }
+        title { info("Server Tour") }
         afterAction(DialogBase.DialogAfterAction.NONE)
     }
 

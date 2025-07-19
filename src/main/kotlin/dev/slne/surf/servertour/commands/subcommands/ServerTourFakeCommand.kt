@@ -6,8 +6,8 @@ import dev.jorel.commandapi.kotlindsl.booleanArgument
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.playerExecutor
 import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.FakeDataManager
-import dev.slne.surf.servertour.entry.ServerTourEntryManager
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.servertour.utils.ServerTourPermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
@@ -22,8 +22,8 @@ fun CommandAPICommand.serverTourFakeDataCommand() = subcommand("fake-data") {
 
         plugin.launch {
             if (clear == true) {
-                ServerTourEntryManager.deleteAll()
-                ServerTourEntryManager.clearCache()
+                EntryManager.deleteAll()
+                EntryManager.clearCache()
 
                 player.sendText {
                     appendPrefix()

@@ -40,4 +40,8 @@ abstract class BaseModel(id: EntityID<Long>, table: BaseTable) : LongEntity(id) 
             pitch = value.pitch
         }
 
+    override fun toString(): String {
+        return "BaseModel(uuid=$uuid, name='$name', description='$description', icon=$icon, owner=$owner, world=$world, x=$x, y=$y, z=$z, yaw=$yaw, pitch=$pitch, createdAt=$createdAt, updatedAt=$updatedAt, location=$location)"
+    }
+    
 }

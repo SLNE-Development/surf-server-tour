@@ -12,4 +12,9 @@ abstract class BaseStatusChangeModel(
     var changedBy by table.changedBy
     var changedReason by table.changedReason
     var createdAt by table.createdAt
+
+    override fun toString(): String {
+        return "BaseStatusChangeModel(oldStatus=$oldStatus, newStatus=$newStatus, changedBy=$changedBy, changedReason=$changedReason, createdAt=$createdAt)"
+    }
+
 }

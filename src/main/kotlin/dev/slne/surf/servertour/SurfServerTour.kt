@@ -4,9 +4,9 @@ import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
 import dev.slne.surf.database.DatabaseManager
 import dev.slne.surf.servertour.commands.serverTourCommand
 import dev.slne.surf.servertour.database.tables.EntryTable
+import dev.slne.surf.servertour.database.tables.MemberTable
 import dev.slne.surf.servertour.database.tables.PoiTable
-import dev.slne.surf.servertour.database.tables.ServerTourEntryMemberTable
-import dev.slne.surf.servertour.entry.ServerTourEntryManager
+import dev.slne.surf.servertour.entry.EntryManager
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -29,7 +29,7 @@ class SurfServerTour : SuspendingJavaPlugin() {
         newSuspendedTransaction {
             SchemaUtils.create(
                 EntryTable,
-                ServerTourEntryMemberTable,
+                MemberTable,
                 PoiTable,
                 PoiTable.PoiStatusChangeTable,
                 EntryTable.ServerTourEntryStatusChangeTable
@@ -38,8 +38,8 @@ class SurfServerTour : SuspendingJavaPlugin() {
     }
 
     override suspend fun onEnableAsync() {
-        ServerTourEntryManager.fetch()
-        
+        EntryManager.fetch()
+
         serverTourCommand()
     }
 

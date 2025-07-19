@@ -21,4 +21,8 @@ class PoiModel(id: EntityID<Long>) : BaseModel(id, PoiTable) {
         var poi by PoiModel referencedOn PoiTable.PoiStatusChangeTable.poi
     }
 
+    override fun toString(): String {
+        return "PoiModel(entry=$entry, statusChanges=$statusChanges)"
+    }
+
 }

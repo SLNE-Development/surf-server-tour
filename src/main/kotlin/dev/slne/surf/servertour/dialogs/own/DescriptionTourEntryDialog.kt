@@ -4,7 +4,7 @@ package dev.slne.surf.servertour.dialogs.own
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.servertour.dialogs.ownTourDialog
-import dev.slne.surf.servertour.entry.ServerTourEntryManager
+import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
@@ -45,7 +45,7 @@ private fun confirmDescriptionButton(entry: TourEntry) = actionButton {
             plugin.launch {
                 val oldDescription = entry.description
 
-                ServerTourEntryManager.update(entry) {
+                EntryManager.updateEntry(entry) {
                     it.description = newDescription
                 }
 

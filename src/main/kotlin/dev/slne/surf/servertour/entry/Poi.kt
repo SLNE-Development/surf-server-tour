@@ -10,7 +10,7 @@ import java.util.*
 
 data class Poi(
     val uuid: UUID,
-    val owner: UUID,
+    var owner: EntryMember,
     var icon: ItemType,
     var name: String,
     var description: String,
@@ -22,9 +22,10 @@ data class Poi(
     val statusChanges get() = _statusChanges.freeze()
 
     companion object {
-        fun fromModel(model: PoiModel) = Poi(
+        fun fromModel(entry: TourEntry, model: PoiModel) = Poi(
             uuid = model.uuid,
-            owner = model.owner,
+            owner = entry.members.firstOrNull { it.uuid == model.owner }
+                ?: error("No owner found for POI $model"),
             icon = model.icon,
             name = model.name,
             description = model.description,

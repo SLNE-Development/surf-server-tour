@@ -6,7 +6,11 @@ object EntryTable : BaseTable("servertour_entries") {
 
     object ServerTourEntryStatusChangeTable :
         BaseStatusChangeTable("servertour_entries_status_changes") {
-        val entry = reference("entry_id", EntryTable.id, ReferenceOption.CASCADE)
+        val entry = reference(
+            "entry_id", EntryTable.id,
+            onUpdate = ReferenceOption.CASCADE,
+            onDelete = ReferenceOption.CASCADE
+        )
     }
 
 }

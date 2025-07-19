@@ -1,6 +1,6 @@
 package dev.slne.surf.servertour.entry
 
-import dev.slne.surf.servertour.entry.ServerTourEntryManager.generateUuid
+import dev.slne.surf.servertour.entry.EntryManager.generateUuid
 import dev.slne.surf.surfapi.bukkit.api.extensions.server
 import dev.slne.surf.surfapi.core.api.util.mutableObjectListOf
 import dev.slne.surf.surfapi.core.api.util.toObjectList
@@ -36,6 +36,10 @@ object FakeDataManager {
         memberAmount: @Range(from = 1, to = 10) IntRange = 1..10
     ) {
         val world = server.worlds.first()
+        val ownerMember = EntryMember(
+            uuid = owner,
+            description = "This is the owner of the tour entry.",
+        )
 
         for (i in 1..amount) {
             val entryX = (0..100).random().toDouble()
@@ -47,9 +51,10 @@ object FakeDataManager {
                 name = "Tour Entry $i",
                 description = "This is a fake tour entry for testing purposes. It is not real and should not be used in production.",
                 icon = icons.random(),
-                owner = owner,
+                owner = ownerMember,
                 location = Location(world, entryX, entryY, entryZ),
             )
+            entry.addMember(owner, ownerMember.description)
 
             val remainingMembers = possibleMembers.filterNot { it == owner }.toMutableList()
 
@@ -76,7 +81,7 @@ object FakeDataManager {
                 entry.addPoi(poi)
             }
 
-            ServerTourEntryManager.create(entry)
+            EntryManager.create(entry)
         }
     }
 }

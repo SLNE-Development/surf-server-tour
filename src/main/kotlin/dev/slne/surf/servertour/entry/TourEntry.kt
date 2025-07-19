@@ -3,6 +3,7 @@ package dev.slne.surf.servertour.entry
 import dev.slne.surf.servertour.database.EntryModel
 import dev.slne.surf.surfapi.core.api.util.freeze
 import dev.slne.surf.surfapi.core.api.util.mutableObjectListOf
+import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import it.unimi.dsi.fastutil.objects.ObjectList
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -15,23 +16,30 @@ data class TourEntry(
     var icon: ItemType,
     var name: String,
     var description: String,
-    val owner: UUID,
+    val owner: EntryMember,
     var location: Location,
     val createdAt: ZonedDateTime = ZonedDateTime.now(),
     var updatedAt: ZonedDateTime = ZonedDateTime.now()
 ) {
-    private val _members: ObjectList<UUID> = mutableObjectListOf()
+    private val _members = mutableObjectSetOf<EntryMember>()
     private val _poi: ObjectList<Poi> = mutableObjectListOf()
     private val statusChanges: ObjectList<StatusChange> = mutableObjectListOf()
 
     val members get() = _members.freeze()
     val poi get() = _poi.freeze()
 
-    fun addMember(member: UUID) = _members.add(uuid)
-    fun addMember(player: Player) = addMember(player.uniqueId)
+    fun addMember(player: Player, description: String? = null) =
+        addMember(player.uniqueId, description)
 
-    fun removeMember(member: UUID) = _members.remove(member)
+    fun addMember(member: UUID, description: String? = null) = _members.add(
+        EntryMember(
+            uuid = member,
+            description = description
+        )
+    )
+
     fun removeMember(player: Player) = removeMember(player.uniqueId)
+    fun removeMember(member: UUID) = _members.removeIf { it.uuid == member }
 
     fun addPoi(poi: Poi) = this._poi.add(poi)
     fun removePoi(poi: Poi) = this._poi.remove(poi)
@@ -91,24 +99,31 @@ data class TourEntry(
     }
 
     companion object {
-        fun fromModel(model: EntryModel) = TourEntry(
-            uuid = model.uuid,
-            icon = model.icon,
-            name = model.name,
-            description = model.description,
-            owner = model.owner,
-            location = model.location,
-            createdAt = model.createdAt,
-            updatedAt = model.updatedAt
-        ).also { entry ->
-            entry._poi.addAll(model.pois.map { poiModel ->
-                Poi.fromModel(poiModel)
-            })
-            entry._members.addAll(model.members.map { it.member })
-            entry.statusChanges.addAll(model.statusChanges.map { change ->
-                StatusChange.fromModel(change)
+        fun fromModel(model: EntryModel): TourEntry {
+            val ownerMemberModel = model.members.firstOrNull { it.member == model.owner }
+                ?: error("Owner member not found in entry model ${model.uuid}")
+            val ownerMember = EntryMember.fromModel(ownerMemberModel)
+
+            return TourEntry(
+                uuid = model.uuid,
+                icon = model.icon,
+                name = model.name,
+                description = model.description,
+                owner = ownerMember,
+                location = model.location,
+                createdAt = model.createdAt,
+                updatedAt = model.updatedAt
+            ).also { entry ->
+                entry._members.addAll(model.members.map { memberModel ->
+                    EntryMember.fromModel(memberModel)
+                })
+                entry._poi.addAll(model.pois.map { poiModel ->
+                    Poi.fromModel(entry, poiModel)
+                })
+                entry.statusChanges.addAll(model.statusChanges.map { change ->
+                    StatusChange.fromModel(change)
+                })
             }
-            )
         }
 
 

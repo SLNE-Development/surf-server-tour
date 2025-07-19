@@ -8,7 +8,12 @@ object PoiTable : BaseTable("servertour_entry_pois") {
 
     object PoiStatusChangeTable :
         BaseStatusChangeTable("servertour_entry_pois_status_changes") {
-        val poi = reference("poi_id", PoiTable.id, ReferenceOption.CASCADE)
+        val poi = reference(
+            "poi_id",
+            PoiTable.id,
+            onUpdate = ReferenceOption.CASCADE,
+            onDelete = ReferenceOption.CASCADE
+        )
     }
 
 }

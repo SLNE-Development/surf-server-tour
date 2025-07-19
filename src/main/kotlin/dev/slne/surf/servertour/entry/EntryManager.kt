@@ -4,8 +4,8 @@ import dev.slne.surf.servertour.database.EntryModel
 import dev.slne.surf.servertour.database.MemberModel
 import dev.slne.surf.servertour.database.PoiModel
 import dev.slne.surf.servertour.database.tables.EntryTable
+import dev.slne.surf.servertour.database.tables.MemberTable
 import dev.slne.surf.servertour.database.tables.PoiTable
-import dev.slne.surf.servertour.database.tables.ServerTourEntryMemberTable
 import dev.slne.surf.surfapi.core.api.util.freeze
 import dev.slne.surf.surfapi.core.api.util.mutableObjectListOf
 import it.unimi.dsi.fastutil.objects.ObjectList
@@ -18,7 +18,7 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import java.time.ZonedDateTime
 import java.util.*
 
-object ServerTourEntryManager {
+object EntryManager {
 
     private val _entries: ObjectList<TourEntry> = mutableObjectListOf()
     val entries get() = _entries.freeze()
@@ -39,7 +39,7 @@ object ServerTourEntryManager {
 
     fun clearCache() = _entries.clear()
 
-    fun listEntries(owner: UUID) = entries.filter { it.owner == owner }
+    fun listEntries(owner: UUID) = entries.filter { it.owner.uuid == owner }
 
     suspend fun fetch() = newSuspendedTransaction {
         val dbEntries = EntryModel.all()
@@ -59,7 +59,7 @@ object ServerTourEntryManager {
             this.name = entry.name
             this.description = entry.description
             this.icon = entry.icon
-            this.owner = entry.owner
+            this.owner = entry.owner.uuid
             this.createdAt = entry.createdAt
             this.updatedAt = entry.updatedAt
             this.location = entry.location
@@ -83,7 +83,7 @@ object ServerTourEntryManager {
         this.uuid = poi.uuid
         this.name = poi.name
         this.description = poi.description
-        this.owner = poi.owner
+        this.owner = poi.owner.uuid
         this.icon = poi.icon
         this.createdAt = poi.createdAt
         this.updatedAt = poi.updatedAt
@@ -91,10 +91,13 @@ object ServerTourEntryManager {
 
     private fun createEntryMember(
         dbEntry: EntryModel,
-        member: UUID
+        member: EntryMember
     ) = MemberModel.new {
         this.entry = dbEntry
-        this.member = member
+        this.member = member.uuid
+        this.description = member.description
+        this.createdAt = member.createdAt
+        this.updatedAt = member.updatedAt
     }
 
     suspend fun delete(entry: TourEntry) = newSuspendedTransaction {
@@ -105,12 +108,56 @@ object ServerTourEntryManager {
         EntryTable.deleteAll()
     }
 
-    suspend fun update(
+    suspend fun updateEntry(
         entry: TourEntry,
         action: suspend (TourEntry) -> Unit
     ) = runUpdating(entry) {
         action(entry)
         updateEntry(entry)
+    }
+
+
+    suspend fun updateMember(
+        entry: TourEntry,
+        member: EntryMember,
+        action: suspend (EntryMember) -> Unit
+    ) = runUpdating(entry) {
+        action(member)
+
+        newSuspendedTransaction {
+            val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
+                .firstOrNull() ?: return@newSuspendedTransaction
+
+            MemberModel.findSingleByAndUpdate((MemberTable.entry eq dbEntry.id) and (MemberTable.member eq member.uuid)) {
+                it.description = member.description
+                it.updatedAt = ZonedDateTime.now()
+            }
+        }
+    }
+
+    suspend fun updatePoi(
+        entry: TourEntry,
+        poi: Poi,
+        action: suspend (Poi) -> Unit
+    ) = runUpdating(entry) {
+        action(poi)
+
+
+        newSuspendedTransaction {
+            val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }.firstOrNull()
+                ?: return@newSuspendedTransaction
+
+            PoiModel.findSingleByAndUpdate(
+                (PoiTable.entry eq dbEntry.id) and (PoiTable.uuid eq poi.uuid)
+            ) {
+                it.name = poi.name
+                it.owner = poi.owner.uuid
+                it.description = poi.description
+                it.icon = poi.icon
+                it.location = poi.location
+                it.updatedAt = poi.updatedAt
+            }
+        }
     }
 
     private suspend fun updateEntry(entry: TourEntry) = newSuspendedTransaction {
@@ -128,22 +175,31 @@ object ServerTourEntryManager {
         action(entry)
     }
 
-    suspend fun addMember(entry: TourEntry, member: Player) =
-        addMember(entry, member.uniqueId)
+    suspend fun addMember(entry: TourEntry, member: Player, description: String? = null) =
+        addMember(entry, member.uniqueId, description)
 
-    suspend fun addMember(entry: TourEntry, member: UUID) = runUpdating(entry) {
+    suspend fun addMember(
+        entry: TourEntry,
+        member: UUID,
+        description: String? = null
+    ) = runUpdating(entry) {
+        val entryMember = EntryMember(
+            uuid = member,
+            description = description ?: "",
+        )
+
         val result = newSuspendedTransaction {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
                 .firstOrNull() ?: return@newSuspendedTransaction false
 
-            createEntryMember(dbEntry, member)
+            createEntryMember(dbEntry, entryMember)
 
             return@newSuspendedTransaction true
         }
 
         if (!result) return@runUpdating
 
-        entry.addMember(member)
+        entry.addMember(member, description)
     }
 
     suspend fun removeMember(entry: TourEntry, member: Player) =
@@ -154,15 +210,21 @@ object ServerTourEntryManager {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
                 .firstOrNull() ?: return@newSuspendedTransaction false
 
-            ServerTourEntryMemberTable.deleteWhere {
-                (ServerTourEntryMemberTable.entry eq dbEntry.id) and
-                        (ServerTourEntryMemberTable.member eq member)
+            MemberTable.deleteWhere {
+                (MemberTable.entry eq dbEntry.id) and
+                        (MemberTable.member eq member)
             }
 
             return@newSuspendedTransaction true
         }
 
         if (!result) return@runUpdating
+
+        entry.poi.filter { it.owner.uuid == member }.forEach { poi ->
+            updatePoi(entry, poi) {
+                it.owner = entry.owner
+            }
+        }
 
         entry.removeMember(member)
     }

@@ -2,7 +2,7 @@
 
 package dev.slne.surf.servertour.dialogs
 
-import dev.slne.surf.servertour.entry.ServerTourEntryManager
+import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
@@ -12,7 +12,7 @@ import java.util.*
 
 fun listOwnToursDialog(owner: UUID) = dialog {
     val ownTours =
-        ServerTourEntryManager.listEntries(owner).map { ownTourDialog(it) }.toObjectList()
+        EntryManager.listEntries(owner).map { ownTourDialog(it) }.toObjectList()
 
     base {
         title { primary("Eigene Einreichungen") }
