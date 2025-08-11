@@ -6,7 +6,7 @@ import dev.slne.surf.servertour.database.PoiModel
 import dev.slne.surf.servertour.database.tables.EntryTable
 import dev.slne.surf.servertour.database.tables.MemberTable
 import dev.slne.surf.servertour.database.tables.PoiTable
-import org.gradle.internal.impldep.kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
