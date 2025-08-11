@@ -8,5 +8,4 @@ object ServerTourPermissionRegistry : PermissionRegistry() {
     private const val COMMAND_PREFIX = "$PREFIX.command"
 
     val BASE = create("$COMMAND_PREFIX.base")
-    val FAKE_CACHED_DATA = create("$COMMAND_PREFIX.fake-cached-data")
 }
