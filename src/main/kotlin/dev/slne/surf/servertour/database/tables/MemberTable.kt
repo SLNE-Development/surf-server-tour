@@ -1,6 +1,7 @@
 package dev.slne.surf.servertour.database.tables
 
-import dev.slne.surf.servertour.utils.zonedDateTime
+import dev.slne.surf.database.database.columns.CurrentZonedDateTime
+import dev.slne.surf.database.database.columns.zonedDateTime
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 
@@ -14,7 +15,7 @@ object MemberTable : LongIdTable("servertour_entry_members") {
     val member = uuid("member_uuid")
     val description = largeText("description").nullable()
 
-    val createdAt = zonedDateTime("created_at")
-    val updatedAt = zonedDateTime("updated_at")
+    val createdAt = zonedDateTime("created_at").defaultExpression(CurrentZonedDateTime)
+    val updatedAt = zonedDateTime("updated_at").defaultExpression(CurrentZonedDateTime)
 
 }

@@ -1,6 +1,7 @@
 package dev.slne.surf.servertour.database.tables
 
-import dev.slne.surf.servertour.utils.zonedDateTime
+import dev.slne.surf.database.database.columns.CurrentZonedDateTime
+import dev.slne.surf.database.database.columns.zonedDateTime
 import dev.slne.surf.surfapi.core.api.messages.adventure.key
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
@@ -24,7 +25,7 @@ abstract class BaseTable(table: String) : LongIdTable(table) {
     val yaw = float("yaw")
     val pitch = float("pitch")
 
-    val createdAt = zonedDateTime("created_at")
-    val updatedAt = zonedDateTime("updated_at")
+    val createdAt = zonedDateTime("created_at").defaultExpression(CurrentZonedDateTime)
+    val updatedAt = zonedDateTime("updated_at").defaultExpression(CurrentZonedDateTime)
 
 }

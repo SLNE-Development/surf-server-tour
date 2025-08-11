@@ -2,6 +2,7 @@
 
 package dev.slne.surf.servertour.dialogs
 
+import dev.slne.surf.servertour.dialogs.own.ownTourDialog
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog

@@ -3,8 +3,9 @@
 package dev.slne.surf.servertour.dialogs.own.member
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.slne.surf.servertour.dialogs.ownTourDialog
+import dev.slne.surf.servertour.dialogs.own.ownTourDialog
 import dev.slne.surf.servertour.entry.EntryManager
+import dev.slne.surf.servertour.entry.EntryMember
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
@@ -18,7 +19,7 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 
 fun addMemberToOwnTourDialog(entry: TourEntry): Dialog = dialog {
     base {
-        title { info("Mitglied hinzufügen ${entry.name}") }
+        title { info("Mitglied hinzufügen - ${entry.name}") }
         afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
@@ -76,8 +77,14 @@ private fun addMemberButton(entry: TourEntry): ActionButton = actionButton {
             }
 
             plugin.launch {
-                EntryManager.addMember(entry, offlinePlayer.uniqueId)
-                audience.showDialog(memberAddedNotice(entry, offlinePlayer.name ?: "Unbekannt"))
+                val member = EntryManager.addMember(entry, offlinePlayer.uniqueId)
+
+                if (member == null) {
+                    audience.showDialog(playerNotFoundNotice(entry, name))
+                    return@launch
+                }
+
+                audience.showDialog(memberAddedNotice(entry, member))
             }
         }
     }
@@ -164,7 +171,7 @@ private fun alreadyMemberNotice(entry: TourEntry, name: String): Dialog = dialog
     }
 }
 
-private fun memberAddedNotice(entry: TourEntry, name: String): Dialog = dialog {
+private fun memberAddedNotice(entry: TourEntry, member: EntryMember): Dialog = dialog {
     base {
         title { primary("Mitglied hinzugefügt") }
         afterAction(DialogBase.DialogAfterAction.NONE)
@@ -172,7 +179,7 @@ private fun memberAddedNotice(entry: TourEntry, name: String): Dialog = dialog {
         body {
             plainMessage(400) {
                 success("Das Mitglied ")
-                variableValue(name)
+                append(member)
                 success(" wurde erfolgreich hinzugefügt.")
             }
         }

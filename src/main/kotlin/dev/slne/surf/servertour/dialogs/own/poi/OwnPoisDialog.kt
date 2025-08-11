@@ -1,7 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
-package dev.slne.surf.servertour.dialogs.own.member
+package dev.slne.surf.servertour.dialogs.own.poi
 
+import dev.slne.surf.servertour.dialogs.own.member.oneMemberDialog
 import dev.slne.surf.servertour.dialogs.own.ownTourDialog
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
@@ -11,14 +12,14 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun ownTourMembersDialog(entry: TourEntry): Dialog = dialog {
+fun ownTourPoisDialog(entry: TourEntry): Dialog = dialog {
     base {
-        title { info("Mitglieder ${entry.name}") }
+        title { info("POIs ${entry.name}") }
         afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
             plainMessage(400) {
-                variableKey("Mitglieder: ")
+                variableKey("POIs: ")
                 variableValue(entry.members.size)
             }
         }

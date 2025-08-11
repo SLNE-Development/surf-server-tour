@@ -1,7 +1,8 @@
 package dev.slne.surf.servertour.database.tables
 
+import dev.slne.surf.database.database.columns.CurrentZonedDateTime
+import dev.slne.surf.database.database.columns.zonedDateTime
 import dev.slne.surf.servertour.entry.EntryStatus
-import dev.slne.surf.servertour.utils.zonedDateTime
 import org.jetbrains.exposed.dao.id.LongIdTable
 import java.util.*
 
@@ -15,5 +16,5 @@ abstract class BaseStatusChangeTable(table: String) : LongIdTable(table) {
         { it.toString() }
     )
     val changedReason = largeText("changed_reason").nullable()
-    val createdAt = zonedDateTime("created_at")
+    val createdAt = zonedDateTime("created_at").defaultExpression(CurrentZonedDateTime)
 }

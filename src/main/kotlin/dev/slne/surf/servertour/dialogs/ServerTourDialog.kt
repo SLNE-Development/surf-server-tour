@@ -25,6 +25,7 @@ fun serverTourDialog(owner: UUID) = dialog {
 
 private fun listOwnTours(owner: UUID): ActionButton = actionButton {
     label { text("Eigene Einreichungen") }
+
     action {
         playerCallback {
             it.showDialog(listOwnToursDialog(owner))

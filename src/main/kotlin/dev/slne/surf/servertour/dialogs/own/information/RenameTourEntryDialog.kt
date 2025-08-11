@@ -1,9 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
-package dev.slne.surf.servertour.dialogs.own
+package dev.slne.surf.servertour.dialogs.own.information
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.slne.surf.servertour.dialogs.ownTourDialog
+import dev.slne.surf.servertour.dialogs.own.ownTourDialog
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
@@ -11,6 +11,7 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
+import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import io.papermc.paper.registry.data.dialog.DialogBase
 
 fun renameOwnTourEntryDialog(entry: TourEntry) = dialog {
@@ -62,13 +63,15 @@ private fun confirmNotice(entry: TourEntry, oldName: String) = dialog {
         body {
             plainMessage(400) {
                 success("Die Einreichung wurde erfolgreich umbenannt")
-            }
-            plainMessage(400) {
+                appendNewline(2)
+
                 variableKey("Alter Name: ")
+                appendNewline()
                 variableValue(oldName)
-            }
-            plainMessage(400) {
+                appendNewline(2)
+
                 variableKey("Neuer Name: ")
+                appendNewline()
                 variableValue(entry.name)
             }
         }

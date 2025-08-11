@@ -36,7 +36,6 @@ object EntryManager {
         return uuid
     }
 
-
     fun clearCache() = _entries.clear()
 
     fun listEntries(owner: UUID) = entries.filter { it.owner.uuid == owner }
@@ -142,7 +141,6 @@ object EntryManager {
     ) = runUpdating(entry) {
         action(poi)
 
-
         newSuspendedTransaction {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }.firstOrNull()
                 ?: return@newSuspendedTransaction
@@ -170,9 +168,9 @@ object EntryManager {
         }
     }
 
-    suspend fun runUpdating(entry: TourEntry, action: suspend (TourEntry) -> Unit) {
+    suspend inline fun <T> runUpdating(entry: TourEntry, action: suspend (TourEntry) -> T?): T? {
         entry.updatedAt = ZonedDateTime.now()
-        action(entry)
+        return action(entry)
     }
 
     suspend fun addMember(entry: TourEntry, member: Player, description: String? = null) =
@@ -182,7 +180,7 @@ object EntryManager {
         entry: TourEntry,
         member: UUID,
         description: String? = null
-    ) = runUpdating(entry) {
+    ): EntryMember? = runUpdating(entry) {
         val entryMember = EntryMember(
             uuid = member,
             description = description ?: "",
@@ -190,16 +188,16 @@ object EntryManager {
 
         val result = newSuspendedTransaction {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
-                .firstOrNull() ?: return@newSuspendedTransaction false
+                .firstOrNull() ?: return@newSuspendedTransaction null
 
             createEntryMember(dbEntry, entryMember)
 
-            return@newSuspendedTransaction true
-        }
-
-        if (!result) return@runUpdating
+            return@newSuspendedTransaction entryMember
+        } ?: return@runUpdating null
 
         entry.addMember(member, description)
+
+        return@runUpdating result
     }
 
     suspend fun removeMember(entry: TourEntry, member: Player) =
