@@ -12,8 +12,11 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 import java.util.*
 
 fun listOwnToursDialog(owner: UUID) = dialog {
-    val ownTours =
-        EntryManager.listEntries(owner).map { ownTourDialog(it) }.toObjectList()
+    val ownTours = EntryManager.listEntries(owner)
+        .sortedBy {
+            it.name
+        }.map { it to ownTourDialog(it, it.isDraft()) }
+        .toObjectList()
 
     base {
         title { primary("Eigene Einreichungen") }
@@ -29,12 +32,8 @@ fun listOwnToursDialog(owner: UUID) = dialog {
     }
 
     type {
-        dialogList {
-            columns(3)
-            buttonWidth(300)
-            addAll(ownTours)
-
-            exitAction {
+        if (ownTours.isEmpty()) {
+            notice {
                 label { text("Zurück") }
                 tooltip { info("Zurück zum Hauptmenü") }
 
@@ -44,6 +43,35 @@ fun listOwnToursDialog(owner: UUID) = dialog {
                     }
                 }
             }
+        } else {
+            multiAction {
+                columns(3)
+
+                ownTours.forEach {
+                    action {
+                        label { text(it.first.name) }
+                        tooltip { info("Öffne Einreichung: ${it.first.name}") }
+
+                        action {
+                            playerCallback { player ->
+                                player.showDialog(it.second)
+                            }
+                        }
+                    }
+                }
+
+                exitAction {
+                    label { text("Zurück") }
+                    tooltip { info("Zurück zum Hauptmenü") }
+
+                    action {
+                        playerCallback {
+                            it.showDialog(serverTourDialog(owner))
+                        }
+                    }
+                }
+            }
         }
+
     }
 }

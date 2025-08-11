@@ -4,16 +4,18 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 object PoiTable : BaseTable("servertour_entry_pois") {
 
-    val entry = reference("entry_id", EntryTable.id, ReferenceOption.CASCADE)
+    val owner = reference(
+        "owner_id",
+        MemberTable,
+        onUpdate = ReferenceOption.SET_NULL,
+        onDelete = ReferenceOption.SET_NULL
+    ).nullable()
 
-    object PoiStatusChangeTable :
-        BaseStatusChangeTable("servertour_entry_pois_status_changes") {
-        val poi = reference(
-            "poi_id",
-            PoiTable.id,
-            onUpdate = ReferenceOption.CASCADE,
-            onDelete = ReferenceOption.CASCADE
-        )
-    }
+    val entry = reference(
+        "entry_id",
+        EntryTable.id,
+        onDelete = ReferenceOption.CASCADE,
+        onUpdate = ReferenceOption.CASCADE
+    )
 
 }

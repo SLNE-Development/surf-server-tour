@@ -12,7 +12,7 @@ object MemberTable : LongIdTable("servertour_entry_members") {
         onUpdate = ReferenceOption.CASCADE,
         onDelete = ReferenceOption.CASCADE
     )
-    val member = uuid("member_uuid")
+    val uuid = uuid("member_uuid")
     val description = largeText("description").nullable()
 
     val createdAt = zonedDateTime("created_at").defaultExpression(CurrentZonedDateTime)

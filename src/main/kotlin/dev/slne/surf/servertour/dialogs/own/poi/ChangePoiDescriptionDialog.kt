@@ -3,6 +3,7 @@
 package dev.slne.surf.servertour.dialogs.own.poi
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.servertour.dialogs.own.buildOwnTourTitle
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.Poi
 import dev.slne.surf.servertour.entry.TourEntry
@@ -12,13 +13,24 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun changePoiDescriptionDialog(entry: TourEntry, poi: Poi): Dialog = dialog {
+fun changePoiDescriptionDialog(
+    entry: TourEntry,
+    poi: Poi,
+    editable: Boolean
+): Dialog = dialog {
     base {
-        title { info("Beschreibung ändern") }
+        title(
+            buildOwnTourTitle(
+                entry,
+                buildText { spacer("POIs") },
+                poi.asComponent(),
+                buildText { spacer("Beschreibung ändern") })
+        )
         afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
 
         body {
@@ -36,13 +48,17 @@ fun changePoiDescriptionDialog(entry: TourEntry, poi: Poi): Dialog = dialog {
 
     type {
         confirmation(
-            acceptChangeDescriptionButton(entry, poi),
-            cancelChangeDescriptionButton(entry, poi)
+            acceptChangeDescriptionButton(entry, poi, editable),
+            cancelChangeDescriptionButton(entry, poi, editable)
         )
     }
 }
 
-private fun acceptChangeDescriptionButton(entry: TourEntry, poi: Poi) = actionButton {
+private fun acceptChangeDescriptionButton(
+    entry: TourEntry,
+    poi: Poi,
+    editable: Boolean
+) = actionButton {
     label { success("Beschreibung ändern") }
     tooltip { info("Ändert die Beschreibung des POIs") }
 
@@ -61,7 +77,8 @@ private fun acceptChangeDescriptionButton(entry: TourEntry, poi: Poi) = actionBu
                     changePoiDescriptionSuccessNotice(
                         entry,
                         poi,
-                        oldDescription
+                        oldDescription,
+                        editable
                     )
                 )
             }
@@ -69,13 +86,17 @@ private fun acceptChangeDescriptionButton(entry: TourEntry, poi: Poi) = actionBu
     }
 }
 
-private fun cancelChangeDescriptionButton(entry: TourEntry, poi: Poi) = actionButton {
+private fun cancelChangeDescriptionButton(
+    entry: TourEntry,
+    poi: Poi,
+    editable: Boolean
+) = actionButton {
     label { text("Abbrechen") }
     tooltip { info("Abbrechen und zurück zum Mitglied") }
 
     action {
         playerCallback {
-            it.showDialog(onePoiDialog(entry, poi))
+            it.showDialog(onePoiDialog(entry, poi, editable))
         }
     }
 }
@@ -83,10 +104,17 @@ private fun cancelChangeDescriptionButton(entry: TourEntry, poi: Poi) = actionBu
 private fun changePoiDescriptionSuccessNotice(
     entry: TourEntry,
     poi: Poi,
-    oldDescription: String
+    oldDescription: String,
+    editable: Boolean
 ) = dialog {
     base {
-        title { primary("Beschreibung geändert") }
+        title(
+            buildOwnTourTitle(
+                entry,
+                buildText { spacer("POIs") },
+                poi.asComponent(),
+                buildText { spacer("Beschreibung geändert") })
+        )
         afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
@@ -106,18 +134,22 @@ private fun changePoiDescriptionSuccessNotice(
         }
 
         type {
-            notice(backButton(entry, poi))
+            notice(backButton(entry, poi, editable))
         }
     }
 }
 
-private fun backButton(entry: TourEntry, poi: Poi): ActionButton = actionButton {
+private fun backButton(
+    entry: TourEntry,
+    poi: Poi,
+    editable: Boolean
+): ActionButton = actionButton {
     label { text("Zurück") }
     tooltip { info("Zurück zum Poi") }
 
     action {
         playerCallback {
-            it.showDialog(onePoiDialog(entry, poi))
+            it.showDialog(onePoiDialog(entry, poi, editable))
         }
     }
 }

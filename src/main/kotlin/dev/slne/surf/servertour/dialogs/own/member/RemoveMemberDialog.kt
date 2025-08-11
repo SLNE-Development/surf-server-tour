@@ -3,6 +3,7 @@
 package dev.slne.surf.servertour.dialogs.own.member
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.servertour.dialogs.own.buildOwnTourTitle
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.EntryMember
 import dev.slne.surf.servertour.entry.TourEntry
@@ -11,13 +12,24 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun removeMemberDialog(entry: TourEntry, member: EntryMember): Dialog = dialog {
+fun removeMemberDialog(
+    entry: TourEntry,
+    member: EntryMember,
+    editable: Boolean
+): Dialog = dialog {
     base {
-        title { error("Mitglied entfernen") }
+        title(
+            buildOwnTourTitle(
+                entry,
+                buildText { spacer("Mitglieder") },
+                member.asComponent(),
+                buildText { spacer("Mitglied entfernen") })
+        )
         afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
 
         body {
@@ -31,26 +43,33 @@ fun removeMemberDialog(entry: TourEntry, member: EntryMember): Dialog = dialog {
 
     type {
         multiAction {
-            action(acceptRemoveMemberButton(entry, member))
-            action(cancelRemoveMemberButton(entry, member))
+            action(acceptRemoveMemberButton(entry, member, editable))
+            action(cancelRemoveMemberButton(entry, member, editable))
 
-            exitAction(backButton(entry))
+            exitAction(backButton(entry, editable))
         }
     }
 }
 
-private fun backButton(entry: TourEntry): ActionButton = actionButton {
+private fun backButton(
+    entry: TourEntry,
+    editable: Boolean
+): ActionButton = actionButton {
     label { text("Zurück") }
     tooltip { info("Zurück zu den Mitgliedern") }
 
     action {
         playerCallback { player ->
-            player.showDialog(ownTourMembersDialog(entry))
+            player.showDialog(ownTourMembersDialog(entry, editable))
         }
     }
 }
 
-private fun acceptRemoveMemberButton(entry: TourEntry, member: EntryMember) = actionButton {
+private fun acceptRemoveMemberButton(
+    entry: TourEntry,
+    member: EntryMember,
+    editable: Boolean
+) = actionButton {
     label { error("Entfernen") }
     tooltip { info("Entfernt das Mitglied") }
 
@@ -58,15 +77,25 @@ private fun acceptRemoveMemberButton(entry: TourEntry, member: EntryMember) = ac
         customClick { response, audience ->
             plugin.launch {
                 EntryManager.removeMember(entry, member.uuid)
-                audience.showDialog(removeMemberSuccessNotice(entry, member))
+                audience.showDialog(removeMemberSuccessNotice(entry, member, editable))
             }
         }
     }
 }
 
-private fun removeMemberSuccessNotice(entry: TourEntry, member: EntryMember) = dialog {
+private fun removeMemberSuccessNotice(
+    entry: TourEntry,
+    member: EntryMember,
+    editable: Boolean
+) = dialog {
     base {
-        title { primary("Mitglied entfernt") }
+        title(
+            buildOwnTourTitle(
+                entry,
+                buildText { spacer("Mitglieder") },
+                member.asComponent(),
+                buildText { spacer("Mitglied entfernt") })
+        )
         afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
@@ -78,18 +107,22 @@ private fun removeMemberSuccessNotice(entry: TourEntry, member: EntryMember) = d
         }
 
         type {
-            notice(backButton(entry))
+            notice(backButton(entry, editable))
         }
     }
 }
 
-private fun cancelRemoveMemberButton(entry: TourEntry, member: EntryMember) = actionButton {
+private fun cancelRemoveMemberButton(
+    entry: TourEntry,
+    member: EntryMember,
+    editable: Boolean
+) = actionButton {
     label { text("Abbrechen") }
     tooltip { info("Abbrechen und zurück zum Mitglied") }
 
     action {
         playerCallback { player ->
-            player.showDialog(oneMemberDialog(entry, member))
+            player.showDialog(oneMemberDialog(entry, member, editable))
         }
     }
 }

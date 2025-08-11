@@ -1,11 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
-package dev.slne.surf.servertour.dialogs.own.information
+package dev.slne.surf.servertour.dialogs.own.poi
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.servertour.dialogs.own.buildOwnTourTitle
-import dev.slne.surf.servertour.dialogs.own.ownTourDialog
 import dev.slne.surf.servertour.entry.EntryManager
+import dev.slne.surf.servertour.entry.Poi
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
@@ -16,60 +16,83 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun renameOwnTourEntryDialog(entry: TourEntry, editable: Boolean) = dialog {
+fun renamePoiDialog(
+    entry: TourEntry,
+    poi: Poi,
+    editable: Boolean
+) = dialog {
     base {
-        title(buildOwnTourTitle(entry, buildText { spacer("Name ändern") }))
+        title(
+            buildOwnTourTitle(
+                entry,
+                buildText { spacer("POIs") },
+                poi.asComponent(),
+                buildText { spacer("Name ändern") })
+        )
         afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
 
         input {
             text("name") {
                 label { text("Name") }
                 maxLength(64)
-                initial(entry.name)
+                initial(poi.name)
                 width(600)
             }
         }
     }
 
     type {
-        confirmation(confirmRenameButton(entry, editable), cancelRenameButton(entry, editable))
+        confirmation(
+            confirmRenameButton(entry, poi, editable),
+            cancelRenameButton(entry, poi, editable)
+        )
     }
 }
 
-private fun confirmRenameButton(entry: TourEntry, editable: Boolean) = actionButton {
+private fun confirmRenameButton(
+    entry: TourEntry,
+    poi: Poi,
+    editable: Boolean
+) = actionButton {
     label { success("Speichern") }
-    tooltip { info("Speichern und zurück zur Einreichung") }
+    tooltip { info("Speichern und zurück zum POI") }
 
     action {
         customClick { response, audience ->
             val newName = response.getText("name") ?: "Fehler"
 
             plugin.launch {
-                val oldName = entry.name
+                val oldName = poi.name
 
-                EntryManager.updateEntry(entry) {
+                EntryManager.updatePoi(entry, poi) {
                     it.name = newName
                 }
 
-                audience.showDialog(confirmNotice(entry, oldName, editable))
+                audience.showDialog(confirmNotice(entry, poi, oldName, editable))
             }
         }
     }
 }
 
-private fun confirmNotice(entry: TourEntry, oldName: String, editable: Boolean) = dialog {
+private fun confirmNotice(
+    entry: TourEntry,
+    poi: Poi,
+    oldName: String,
+    editable: Boolean
+) = dialog {
     base {
         title(
             buildOwnTourTitle(
                 entry,
-                buildText { spacer("Einreichung umbenannt") }
-            )
+                buildText { spacer("POIs") },
+                poi.asComponent(),
+                buildText { spacer("POI umbenannt") })
         )
         afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
             plainMessage(400) {
-                success("Die Einreichung wurde erfolgreich umbenannt")
+                success("Der POI wurde erfolgreich umbenannt")
                 appendNewline(2)
 
                 variableKey("Alter Name: ")
@@ -79,34 +102,34 @@ private fun confirmNotice(entry: TourEntry, oldName: String, editable: Boolean) 
 
                 variableKey("Neuer Name: ")
                 appendNewline()
-                variableValue(entry.name)
+                variableValue(poi.name)
             }
         }
     }
 
     type {
-        notice(backToEntryButton(entry, editable))
+        notice(backToPoiButton(entry, poi, editable))
     }
 }
 
-private fun backToEntryButton(entry: TourEntry, editable: Boolean) = actionButton {
-    label { text("Zurück zur Einreichung") }
-    tooltip { info("Zurück zur Einreichung") }
+private fun backToPoiButton(entry: TourEntry, poi: Poi, editable: Boolean) = actionButton {
+    label { text("Zurück zum POI") }
+    tooltip { info("Zurück zum POI") }
 
     action {
         playerCallback {
-            it.showDialog(ownTourDialog(entry, editable))
+            it.showDialog(onePoiDialog(entry, poi, editable))
         }
     }
 }
 
-private fun cancelRenameButton(entry: TourEntry, editable: Boolean) = actionButton {
+private fun cancelRenameButton(entry: TourEntry, poi: Poi, editable: Boolean) = actionButton {
     label { text("Abbrechen") }
-    tooltip { info("Abbrechen und zurück zur Einreichung") }
+    tooltip { info("Abbrechen und zurück zum POI") }
 
     action {
         playerCallback {
-            it.showDialog(ownTourDialog(entry, editable))
+            it.showDialog(onePoiDialog(entry, poi, editable))
         }
     }
 }

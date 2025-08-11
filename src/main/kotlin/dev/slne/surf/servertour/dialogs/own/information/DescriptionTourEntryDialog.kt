@@ -3,6 +3,7 @@
 package dev.slne.surf.servertour.dialogs.own.information
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.servertour.dialogs.own.buildOwnTourTitle
 import dev.slne.surf.servertour.dialogs.own.ownTourDialog
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.TourEntry
@@ -12,11 +13,12 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun descriptionOwnTourEntryDialog(entry: TourEntry) = dialog {
+fun descriptionOwnTourEntryDialog(entry: TourEntry, editable: Boolean) = dialog {
     base {
-        title { primary("${entry.name} Beschreibung ändern") }
+        title(buildOwnTourTitle(entry, buildText { spacer("Beschreibung ändern") }))
         afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
 
         input {
@@ -31,11 +33,14 @@ fun descriptionOwnTourEntryDialog(entry: TourEntry) = dialog {
     }
 
     type {
-        confirmation(confirmDescriptionButton(entry), cancelDescriptionButton(entry))
+        confirmation(
+            confirmDescriptionButton(entry, editable),
+            cancelDescriptionButton(entry, editable)
+        )
     }
 }
 
-private fun confirmDescriptionButton(entry: TourEntry) = actionButton {
+private fun confirmDescriptionButton(entry: TourEntry, editable: Boolean) = actionButton {
     label { success("Speichern") }
     tooltip { info("Speichern und zurück zur Einreichung") }
 
@@ -50,13 +55,13 @@ private fun confirmDescriptionButton(entry: TourEntry) = actionButton {
                     it.description = newDescription
                 }
 
-                audience.showDialog(confirmNotice(entry, oldDescription))
+                audience.showDialog(confirmNotice(entry, oldDescription, editable))
             }
         }
     }
 }
 
-private fun confirmNotice(entry: TourEntry, oldDescription: String) = dialog {
+private fun confirmNotice(entry: TourEntry, oldDescription: String, editable: Boolean) = dialog {
     base {
         title { primary("Beschreibung der Einreichung aktualisert") }
         afterAction(DialogBase.DialogAfterAction.NONE)
@@ -79,28 +84,28 @@ private fun confirmNotice(entry: TourEntry, oldDescription: String) = dialog {
     }
 
     type {
-        notice(backToEntryButton(entry))
+        notice(backToEntryButton(entry, editable))
     }
 }
 
-private fun backToEntryButton(entry: TourEntry) = actionButton {
+private fun backToEntryButton(entry: TourEntry, editable: Boolean) = actionButton {
     label { text("Zurück zur Einreichung") }
     tooltip { info("Zurück zur Einreichung") }
 
     action {
         playerCallback {
-            it.showDialog(ownTourDialog(entry))
+            it.showDialog(ownTourDialog(entry, editable))
         }
     }
 }
 
-private fun cancelDescriptionButton(entry: TourEntry) = actionButton {
+private fun cancelDescriptionButton(entry: TourEntry, editable: Boolean) = actionButton {
     label { text("Abbrechen") }
     tooltip { info("Abbrechen und zurück zur Einreichung") }
 
     action {
         playerCallback {
-            it.showDialog(ownTourDialog(entry))
+            it.showDialog(ownTourDialog(entry, editable))
         }
     }
 }

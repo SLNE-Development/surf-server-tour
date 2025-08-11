@@ -11,8 +11,7 @@ abstract class BaseModel(id: EntityID<Long>, table: BaseTable) : LongEntity(id) 
     var uuid by table.uuid
     var name by table.name
     var description by table.description
-    var icon by table.icon
-    var owner by table.owner
+    var status by table.status
 
     var world by table.world
     var x by table.x
@@ -39,9 +38,4 @@ abstract class BaseModel(id: EntityID<Long>, table: BaseTable) : LongEntity(id) 
             yaw = value.yaw
             pitch = value.pitch
         }
-
-    override fun toString(): String {
-        return "BaseModel(uuid=$uuid, name='$name', description='$description', icon=$icon, owner=$owner, world=$world, x=$x, y=$y, z=$z, yaw=$yaw, pitch=$pitch, createdAt=$createdAt, updatedAt=$updatedAt, location=$location)"
-    }
-    
 }

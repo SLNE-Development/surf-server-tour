@@ -3,6 +3,7 @@
 package dev.slne.surf.servertour.dialogs.own.member
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.servertour.dialogs.own.buildOwnTourTitle
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.EntryMember
 import dev.slne.surf.servertour.entry.TourEntry
@@ -12,13 +13,24 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun changeMemberDescriptionDialog(entry: TourEntry, member: EntryMember): Dialog = dialog {
+fun changeMemberDescriptionDialog(
+    entry: TourEntry,
+    member: EntryMember,
+    editable: Boolean
+): Dialog = dialog {
     base {
-        title { info("Beschreibung ändern") }
+        title(
+            buildOwnTourTitle(
+                entry,
+                buildText { spacer("Mitglieder") },
+                member.asComponent(),
+                buildText { spacer("Beschreibung ändern") })
+        )
         afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
 
         body {
@@ -36,13 +48,17 @@ fun changeMemberDescriptionDialog(entry: TourEntry, member: EntryMember): Dialog
 
     type {
         confirmation(
-            acceptChangeDescriptionButton(entry, member),
-            cancelChangeDescriptionButton(entry, member)
+            acceptChangeDescriptionButton(entry, member, editable),
+            cancelChangeDescriptionButton(entry, member, editable)
         )
     }
 }
 
-private fun acceptChangeDescriptionButton(entry: TourEntry, member: EntryMember) = actionButton {
+private fun acceptChangeDescriptionButton(
+    entry: TourEntry,
+    member: EntryMember,
+    editable: Boolean
+) = actionButton {
     label { success("Beschreibung ändern") }
     tooltip { info("Ändert die Beschreibung des Mitglieds") }
 
@@ -61,7 +77,8 @@ private fun acceptChangeDescriptionButton(entry: TourEntry, member: EntryMember)
                     changeMemberDescriptionSuccessNotice(
                         entry,
                         member,
-                        oldDescription
+                        oldDescription,
+                        editable
                     )
                 )
             }
@@ -69,13 +86,17 @@ private fun acceptChangeDescriptionButton(entry: TourEntry, member: EntryMember)
     }
 }
 
-private fun cancelChangeDescriptionButton(entry: TourEntry, member: EntryMember) = actionButton {
+private fun cancelChangeDescriptionButton(
+    entry: TourEntry,
+    member: EntryMember,
+    editable: Boolean
+) = actionButton {
     label { text("Abbrechen") }
     tooltip { info("Abbrechen und zurück zum Mitglied") }
 
     action {
         playerCallback { player ->
-            player.showDialog(oneMemberDialog(entry, member))
+            player.showDialog(oneMemberDialog(entry, member, editable))
         }
     }
 }
@@ -83,10 +104,17 @@ private fun cancelChangeDescriptionButton(entry: TourEntry, member: EntryMember)
 private fun changeMemberDescriptionSuccessNotice(
     entry: TourEntry,
     member: EntryMember,
-    oldDescription: String?
+    oldDescription: String?,
+    editable: Boolean
 ) = dialog {
     base {
-        title { primary("Beschreibung geändert") }
+        title(
+            buildOwnTourTitle(
+                entry,
+                buildText { spacer("Mitglieder") },
+                member.asComponent(),
+                buildText { spacer("Beschreibung geändert") })
+        )
         afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
@@ -108,18 +136,22 @@ private fun changeMemberDescriptionSuccessNotice(
         }
 
         type {
-            notice(backButton(entry, member))
+            notice(backButton(entry, member, editable))
         }
     }
 }
 
-private fun backButton(entry: TourEntry, member: EntryMember): ActionButton = actionButton {
+private fun backButton(
+    entry: TourEntry,
+    member: EntryMember,
+    editable: Boolean
+): ActionButton = actionButton {
     label { text("Zurück") }
     tooltip { info("Zurück zum Mitglied") }
 
     action {
         playerCallback { player ->
-            player.showDialog(oneMemberDialog(entry, member))
+            player.showDialog(oneMemberDialog(entry, member, editable))
         }
     }
 }

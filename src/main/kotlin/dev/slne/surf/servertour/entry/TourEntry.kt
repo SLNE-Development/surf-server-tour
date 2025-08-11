@@ -1,132 +1,92 @@
 package dev.slne.surf.servertour.entry
 
-import dev.slne.surf.servertour.database.EntryModel
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.util.freeze
 import dev.slne.surf.surfapi.core.api.util.mutableObjectListOf
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import it.unimi.dsi.fastutil.objects.ObjectList
+import net.kyori.adventure.text.ComponentLike
 import org.bukkit.Location
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemType
 import java.time.ZonedDateTime
 import java.util.*
 
 data class TourEntry(
     val uuid: UUID,
-    var icon: ItemType,
     var name: String,
     var description: String,
+    var status: EntryStatus,
     val owner: EntryMember,
     var location: Location,
     val createdAt: ZonedDateTime = ZonedDateTime.now(),
     var updatedAt: ZonedDateTime = ZonedDateTime.now()
-) {
+) : ComponentLike {
     private val _members = mutableObjectSetOf<EntryMember>()
     private val _poi: ObjectList<Poi> = mutableObjectListOf()
-    private val statusChanges: ObjectList<StatusChange> = mutableObjectListOf()
 
     val members get() = _members.freeze()
     val poi get() = _poi.freeze()
 
-    fun addMember(player: Player, description: String? = null) =
-        addMember(player.uniqueId, description)
-
-    fun addMember(member: UUID, description: String? = null) = _members.add(
-        EntryMember(
-            uuid = member,
-            description = description
-        )
-    )
-
-    fun removeMember(player: Player) = removeMember(player.uniqueId)
-    fun removeMember(member: UUID) = _members.removeIf { it.uuid == member }
+    fun addMember(member: EntryMember) = _members.add(member)
+    fun removeMember(member: EntryMember) = _members.remove(member)
+    fun removeMember(uuid: UUID) = _members.removeIf { it.uuid == uuid }
 
     fun addPoi(poi: Poi) = this._poi.add(poi)
     fun removePoi(poi: Poi) = this._poi.remove(poi)
 
-    fun submit(player: Player) = submit(player.uniqueId)
+    fun addMembers(members: Collection<EntryMember>) =
+        _members.addAll(members)
 
-    fun submit(submitter: UUID) {
-        if (isLocked()) return
+    fun addPois(pois: Collection<Poi>) =
+        _poi.addAll(pois)
 
-        statusChanges.add(StatusChange.pending(submitter))
-    }
+    suspend fun submit() {
+        if (!isDraft()) return
 
-    fun accept(player: Player) = accept(player.uniqueId)
+        poi.forEach { it.submit() }
 
-    fun accept(acceptedBy: UUID) {
-        val active = getActiveStatus()
-
-        if (active == null || active.newStatus != EntryStatus.PENDING) return
-
-        statusChanges.add(StatusChange.accepted(acceptedBy))
-    }
-
-    @Suppress("SpellCheckingInspection")
-    fun reject(rejector: Player, reason: String) = reject(rejector.uniqueId, reason)
-
-    @Suppress("SpellCheckingInspection")
-    fun reject(rejector: UUID, reason: String) {
-        val active = getActiveStatus()
-
-        if (active == null || active.newStatus != EntryStatus.PENDING) return
-
-        statusChanges.add(StatusChange.rejected(rejector, reason))
-    }
-
-    fun reopen(player: Player) = reopen(player.uniqueId)
-
-    fun reopen(reopenedBy: UUID) {
-        val active = getActiveStatus()
-
-        if (active != null && (active.newStatus == EntryStatus.REJECTED || active.newStatus == EntryStatus.ACCEPTED)) {
-            return
+        EntryManager.updateEntry(this) {
+            it.status = EntryStatus.PENDING
         }
 
-        statusChanges.add(StatusChange.reopen(reopenedBy, active!!.oldStatus))
+        status = EntryStatus.PENDING
     }
 
-    fun isLocked(): Boolean {
-        val active = getActiveStatus()
+    suspend fun accept() {
+        if (!isPending()) return
 
-        return active != null && active.newStatus == EntryStatus.DRAFT
-    }
-
-    fun getActiveStatus() = statusChanges.lastOrNull()
-
-    override fun toString(): String {
-        return "ServerTourEntry(uuid=$uuid, icon=$icon, name='$name', description='$description', owner=$owner, location=$location, createdAt=$createdAt, updatedAt=$updatedAt, statusChanges=$statusChanges, members=$members, poi=$poi)"
-    }
-
-    companion object {
-        fun fromModel(model: EntryModel): TourEntry {
-            val ownerMemberModel = model.members.firstOrNull { it.member == model.owner }
-                ?: error("Owner member not found in entry model ${model.uuid}")
-            val ownerMember = EntryMember.fromModel(ownerMemberModel)
-
-            return TourEntry(
-                uuid = model.uuid,
-                icon = model.icon,
-                name = model.name,
-                description = model.description,
-                owner = ownerMember,
-                location = model.location,
-                createdAt = model.createdAt,
-                updatedAt = model.updatedAt
-            ).also { entry ->
-                entry._members.addAll(model.members.map { memberModel ->
-                    EntryMember.fromModel(memberModel)
-                })
-                entry._poi.addAll(model.pois.map { poiModel ->
-                    Poi.fromModel(entry, poiModel)
-                })
-                entry.statusChanges.addAll(model.statusChanges.map { change ->
-                    StatusChange.fromModel(change)
-                })
-            }
+        EntryManager.updateEntry(this) {
+            it.status = EntryStatus.ACCEPTED
         }
 
+        status = EntryStatus.ACCEPTED
+    }
 
+    suspend fun reject() {
+        if (!isPending()) return
+
+        EntryManager.updateEntry(this) {
+            it.status = EntryStatus.REJECTED
+        }
+
+        status = EntryStatus.REJECTED
+    }
+
+    suspend fun reopen() {
+        if (!isLocked()) return
+
+        EntryManager.updateEntry(this) {
+            it.status = EntryStatus.DRAFT
+        }
+
+        status = EntryStatus.DRAFT
+    }
+
+    fun isLocked() = status == EntryStatus.ACCEPTED || status == EntryStatus.REJECTED
+    fun isDraft() = status == EntryStatus.DRAFT
+    fun isPending() = status == EntryStatus.PENDING
+
+    override fun asComponent() = buildText {
+        variableValue(name)
     }
 }
 

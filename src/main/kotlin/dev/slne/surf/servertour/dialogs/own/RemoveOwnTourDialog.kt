@@ -1,11 +1,10 @@
 @file:Suppress("UnstableApiUsage")
 
-package dev.slne.surf.servertour.dialogs.own.poi
+package dev.slne.surf.servertour.dialogs.own
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.slne.surf.servertour.dialogs.own.buildOwnTourTitle
+import dev.slne.surf.servertour.dialogs.listOwnToursDialog
 import dev.slne.surf.servertour.entry.EntryManager
-import dev.slne.surf.servertour.entry.Poi
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
@@ -17,25 +16,20 @@ import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun removePoiDialog(
-    entry: TourEntry,
-    poi: Poi,
-    editable: Boolean
-): Dialog = dialog {
+fun removeOwnTourDialog(entry: TourEntry, editable: Boolean): Dialog = dialog {
     base {
         title(
             buildOwnTourTitle(
                 entry,
-                buildText { spacer("POIs") },
-                poi.asComponent(),
-                buildText { spacer("POI entfernen") })
+                buildText { spacer("Einreichung entfernen") }
+            )
         )
         afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
 
         body {
             plainMessage(400) {
-                error("Möchtest du den POI ")
-                append(poi)
+                error("Möchtest du die Einreichung ")
+                append(entry)
                 error(" wirklich entfernen?")
             }
         }
@@ -43,71 +37,69 @@ fun removePoiDialog(
 
     type {
         multiAction {
-            action(acceptRemovePoiButton(entry, poi, editable))
-            action(cancelRemovePoiButton(entry, poi, editable))
+            action(acceptRemoveEntryButton(entry))
+            action(cancelRemoveEntryButton(entry, editable))
         }
     }
 }
 
-private fun backButton(entry: TourEntry, editable: Boolean): ActionButton = actionButton {
+private fun backButton(entry: TourEntry): ActionButton = actionButton {
     label { text("Zurück") }
     tooltip {
-        info("Zurück zu der Liste der POIs")
+        info("Zurück zu der Liste der Einreichungen")
     }
 
     action {
         playerCallback {
-            it.showDialog(ownTourPoisDialog(entry, editable))
+            it.showDialog(listOwnToursDialog(entry.owner.uuid))
         }
     }
 }
 
-private fun acceptRemovePoiButton(entry: TourEntry, poi: Poi, editable: Boolean) = actionButton {
+private fun acceptRemoveEntryButton(entry: TourEntry) = actionButton {
     label { error("Entfernen") }
-    tooltip { info("Entfernt den POI") }
+    tooltip { info("Entfernt die Einreichung") }
 
     action {
         playerCallback {
             plugin.launch {
-                EntryManager.removePoi(entry, poi)
-                it.showDialog(removePoiSuccessNotice(entry, poi, editable))
+                EntryManager.delete(entry)
+                it.showDialog(removeEntrySuccessNotice(entry))
             }
         }
     }
 }
 
-private fun removePoiSuccessNotice(entry: TourEntry, poi: Poi, editable: Boolean) = dialog {
+private fun removeEntrySuccessNotice(entry: TourEntry) = dialog {
     base {
         title(
             buildOwnTourTitle(
                 entry,
-                buildText { spacer("POIs") },
-                poi.asComponent(),
-                buildText { spacer("POI entfernt") })
+                buildText { spacer("Einreichung entfernt") })
         )
         afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
             plainMessage(400) {
-                success("Der POI ")
-                append(poi)
+                success("Die Einreichung ")
+                append(entry)
                 success(" wurde erfolgreich entfernt")
             }
         }
 
         type {
-            notice(backButton(entry, editable))
+            notice(backButton(entry))
         }
     }
 }
 
-private fun cancelRemovePoiButton(entry: TourEntry, poi: Poi, editable: Boolean) = actionButton {
+private fun cancelRemoveEntryButton(entry: TourEntry, editable: Boolean) = actionButton {
     label { text("Abbrechen") }
-    tooltip { info("Abbrechen und zurück zum POI") }
+    tooltip { info("Abbrechen und zurück zur Einreichung") }
 
     action {
         playerCallback {
-            it.showDialog(onePoiDialog(entry, poi, editable))
+            it.showDialog(ownTourDialog(entry, editable))
         }
     }
 }

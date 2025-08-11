@@ -31,8 +31,6 @@ class SurfServerTour : SuspendingJavaPlugin() {
                 EntryTable,
                 MemberTable,
                 PoiTable,
-                PoiTable.PoiStatusChangeTable,
-                EntryTable.ServerTourEntryStatusChangeTable
             )
         }
     }

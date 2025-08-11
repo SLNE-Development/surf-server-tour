@@ -2,9 +2,7 @@ package dev.slne.surf.servertour.database.tables
 
 import dev.slne.surf.database.database.columns.CurrentZonedDateTime
 import dev.slne.surf.database.database.columns.zonedDateTime
-import dev.slne.surf.surfapi.core.api.messages.adventure.key
-import io.papermc.paper.registry.RegistryAccess
-import io.papermc.paper.registry.RegistryKey
+import dev.slne.surf.servertour.entry.EntryStatus
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 abstract class BaseTable(table: String) : LongIdTable(table) {
@@ -12,11 +10,7 @@ abstract class BaseTable(table: String) : LongIdTable(table) {
     val uuid = uuid("uuid").uniqueIndex()
     val name = varchar("name", 64)
     val description = largeText("description")
-    val icon = varchar("icon", 255).transform(
-        { RegistryAccess.registryAccess().getRegistry(RegistryKey.ITEM).getOrThrow(key(it)) },
-        { it.key().asString() }
-    )
-    val owner = uuid("owner")
+    val status = enumerationByName<EntryStatus>("status", 32).default(EntryStatus.DRAFT)
 
     val world = uuid("world")
     val x = double("x")
