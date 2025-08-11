@@ -1,5 +1,6 @@
 package dev.slne.surf.servertour.entry
 
+import dev.slne.surf.servertour.config.config
 import dev.slne.surf.servertour.database.EntryModel
 import dev.slne.surf.servertour.database.MemberModel
 import dev.slne.surf.servertour.database.PoiModel
@@ -18,7 +19,7 @@ import java.util.*
 object EntryManager {
 
     suspend fun listEntries(owner: UUID) = newSuspendedTransaction(Dispatchers.IO) {
-        EntryModel.find { EntryTable.owner eq owner }
+        EntryModel.find { (EntryTable.owner eq owner) and (EntryTable.server eq config.serverName) }
             .map { it.toApi() }
     }
 
