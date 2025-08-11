@@ -138,7 +138,11 @@ private fun backButton() = actionButton {
     tooltip { info("Zurück zu den Einreichungen") }
 
     action {
-        playerCallback { it.showDialog(listOwnToursDialog(it.uniqueId)) }
+        playerCallback {
+            plugin.launch {
+                it.showDialog(listOwnToursDialog(it.uniqueId))
+            }
+        }
     }
 }
 

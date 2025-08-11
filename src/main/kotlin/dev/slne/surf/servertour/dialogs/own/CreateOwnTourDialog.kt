@@ -77,7 +77,7 @@ private fun confirmCreateButton() = actionButton {
                     server = config.serverName
                 )
 
-                EntryManager.create(entry)
+                EntryManager.createEntry(entry)
 
                 player.showDialog(createSuccessNotice(entry))
             }

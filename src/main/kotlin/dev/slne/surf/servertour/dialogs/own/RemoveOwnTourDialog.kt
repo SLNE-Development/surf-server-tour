@@ -51,7 +51,9 @@ private fun backButton(entry: TourEntry): ActionButton = actionButton {
 
     action {
         playerCallback {
-            it.showDialog(listOwnToursDialog(entry.owner.uuid))
+            plugin.launch {
+                it.showDialog(listOwnToursDialog(entry.owner.uuid))
+            }
         }
     }
 }

@@ -6,9 +6,7 @@ import dev.slne.surf.servertour.database.PoiModel
 import dev.slne.surf.servertour.database.tables.EntryTable
 import dev.slne.surf.servertour.database.tables.MemberTable
 import dev.slne.surf.servertour.database.tables.PoiTable
-import dev.slne.surf.surfapi.core.api.util.freeze
-import dev.slne.surf.surfapi.core.api.util.mutableObjectListOf
-import it.unimi.dsi.fastutil.objects.ObjectList
+import org.gradle.internal.impldep.kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
@@ -19,26 +17,12 @@ import java.util.*
 
 object EntryManager {
 
-    private val _entries: ObjectList<TourEntry> = mutableObjectListOf()
-    val entries get() = _entries.freeze()
-
-    fun clearCache() = _entries.clear()
-
-    fun listEntries(owner: UUID) = entries.filter { it.owner.uuid == owner }
-
-    suspend fun fetch() = newSuspendedTransaction {
-        val dbEntries = EntryModel.all()
-
-        _entries.clear()
-        _entries.addAll(dbEntries.map { it.toApi() })
+    suspend fun listEntries(owner: UUID) = newSuspendedTransaction(Dispatchers.IO) {
+        EntryModel.find { EntryTable.owner eq owner }
+            .map { it.toApi() }
     }
 
-    suspend fun create(entry: TourEntry) {
-        createEntry(entry)
-        _entries.add(entry)
-    }
-
-    private suspend fun createEntry(entry: TourEntry) = newSuspendedTransaction {
+    suspend fun createEntry(entry: TourEntry) = newSuspendedTransaction(Dispatchers.IO) {
         val dbEntry = EntryModel.new {
             this.server = entry.server
             this.uuid = entry.uuid
@@ -90,15 +74,11 @@ object EntryManager {
         this.updatedAt = member.updatedAt
     }
 
-    suspend fun delete(entry: TourEntry) = newSuspendedTransaction {
-        val result = EntryTable.deleteWhere { EntryTable.uuid eq entry.uuid }
-
-        if (result > 0) {
-            _entries.remove(entry)
-        }
+    suspend fun delete(entry: TourEntry) = newSuspendedTransaction(Dispatchers.IO) {
+        EntryTable.deleteWhere { EntryTable.uuid eq entry.uuid }
     }
 
-    suspend fun deleteAll() = newSuspendedTransaction {
+    suspend fun deleteAll() = newSuspendedTransaction(Dispatchers.IO) {
         EntryTable.deleteAll()
     }
 
@@ -118,7 +98,7 @@ object EntryManager {
     ) = runUpdating(entry) {
         action(member)
 
-        newSuspendedTransaction {
+        newSuspendedTransaction(Dispatchers.IO) {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
                 .firstOrNull() ?: return@newSuspendedTransaction
 
@@ -136,7 +116,7 @@ object EntryManager {
     ) = runUpdating(entry) {
         action(poi)
 
-        newSuspendedTransaction {
+        newSuspendedTransaction(Dispatchers.IO) {
             val dbMember = poi.owner?.let {
                 MemberModel.find { MemberTable.uuid eq it.uuid }.firstOrNull()
             }
@@ -153,7 +133,9 @@ object EntryManager {
         }
     }
 
-    private suspend fun updateEntry(entry: TourEntry) = newSuspendedTransaction {
+    private suspend fun updateEntry(
+        entry: TourEntry
+    ) = newSuspendedTransaction(Dispatchers.IO) {
         EntryModel.findSingleByAndUpdate(EntryTable.uuid eq entry.uuid) {
             it.name = entry.name
             it.description = entry.description
@@ -177,7 +159,7 @@ object EntryManager {
             description = description ?: "",
         )
 
-        val result = newSuspendedTransaction {
+        val result = newSuspendedTransaction(Dispatchers.IO) {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
                 .firstOrNull() ?: return@newSuspendedTransaction null
 
@@ -192,7 +174,7 @@ object EntryManager {
     }
 
     suspend fun removeMember(entry: TourEntry, member: UUID) = runUpdating(entry) {
-        val result = newSuspendedTransaction {
+        val result = newSuspendedTransaction(Dispatchers.IO) {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
                 .firstOrNull() ?: return@newSuspendedTransaction false
 
@@ -218,7 +200,7 @@ object EntryManager {
         entry: TourEntry,
         poi: Poi
     ) = runUpdating(entry) {
-        val result = newSuspendedTransaction {
+        val result = newSuspendedTransaction(Dispatchers.IO) {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
                 .firstOrNull() ?: return@newSuspendedTransaction false
 
@@ -236,7 +218,7 @@ object EntryManager {
         entry: TourEntry,
         point: Poi
     ) = runUpdating(entry) {
-        val result = newSuspendedTransaction {
+        val result = newSuspendedTransaction(Dispatchers.IO) {
             val dbEntry = EntryModel.find { EntryTable.uuid eq entry.uuid }
                 .firstOrNull() ?: return@newSuspendedTransaction false
 

@@ -2,7 +2,9 @@
 
 package dev.slne.surf.servertour.dialogs
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.servertour.dialogs.own.createOwnTourDialog
+import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
@@ -43,7 +45,9 @@ private fun listOwnTours(owner: UUID): ActionButton = actionButton {
 
     action {
         playerCallback {
-            it.showDialog(listOwnToursDialog(owner))
+            plugin.launch {
+                it.showDialog(listOwnToursDialog(owner))
+            }
         }
     }
 }
