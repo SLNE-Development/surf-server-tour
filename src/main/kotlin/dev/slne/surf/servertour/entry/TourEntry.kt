@@ -11,6 +11,7 @@ import java.time.ZonedDateTime
 import java.util.*
 
 data class TourEntry(
+    val server: String,
     val uuid: UUID,
     var name: String,
     var description: String,

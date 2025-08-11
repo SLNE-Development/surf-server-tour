@@ -40,6 +40,7 @@ object EntryManager {
 
     private suspend fun createEntry(entry: TourEntry) = newSuspendedTransaction {
         val dbEntry = EntryModel.new {
+            this.server = entry.server
             this.uuid = entry.uuid
             this.name = entry.name
             this.description = entry.description

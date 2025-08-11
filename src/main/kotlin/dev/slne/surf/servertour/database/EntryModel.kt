@@ -13,11 +13,13 @@ class EntryModel(id: EntityID<Long>) : BaseModel(id, EntryTable) {
 
     companion object : LongEntityClass<EntryModel>(EntryTable)
 
+    var server by EntryTable.server
     var owner by EntryTable.owner
     val pois by PoiModel referrersOn PoiTable.entry
     val members by MemberModel referrersOn MemberTable.entry
 
     fun toApi() = TourEntry(
+        server = server,
         uuid = uuid,
         name = name,
         description = description,

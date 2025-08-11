@@ -3,6 +3,7 @@
 package dev.slne.surf.servertour.dialogs.own
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.servertour.config.config
 import dev.slne.surf.servertour.dialogs.serverTourDialog
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.EntryMember
@@ -72,7 +73,8 @@ private fun confirmCreateButton() = actionButton {
                         uuid = player.uniqueId
                     ),
                     location = player.location,
-                    status = EntryStatus.DRAFT
+                    status = EntryStatus.DRAFT,
+                    server = config.serverName
                 )
 
                 EntryManager.create(entry)
