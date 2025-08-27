@@ -41,23 +41,15 @@ data class TourEntry(
         _poi.addAll(pois)
 
     suspend fun submit() {
-        println("Submitting entry $this")
         if (!isDraft()) return
-        println("Entry is draft, submitting POIs...")
 
         poi.forEach { it.submit() }
-
-        println("All POIs submitted, submitting entry...")
 
         EntryManager.updateEntry(this) {
             it.status = EntryStatus.PENDING
         }
 
-        println("Entry submitted.")
-
         status = EntryStatus.PENDING
-
-        println("Entry status updated to PENDING.")
     }
 
     suspend fun accept() {
