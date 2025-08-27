@@ -9,4 +9,5 @@ object ServerTourPermissionRegistry : PermissionRegistry() {
 
     val BASE = create("$COMMAND_PREFIX.base")
     val REVIEWER = create("$PREFIX.reviewer")
+    val SHOWCASE = create("$PREFIX.showcase")
 }

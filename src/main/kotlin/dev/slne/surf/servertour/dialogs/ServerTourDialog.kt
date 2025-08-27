@@ -4,6 +4,7 @@ package dev.slne.surf.servertour.dialogs
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.servertour.dialogs.own.createOwnTourDialog
+import dev.slne.surf.servertour.dialogs.own.review.showcase.createShowcaseTourDialog
 import dev.slne.surf.servertour.dialogs.own.review.submitted.createViewSubmittedToursDialog
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.servertour.utils.ServerTourPermissionRegistry
@@ -29,8 +30,12 @@ fun serverTourDialog(owner: UUID) = dialog {
             action(listOwnTours(owner))
             action(createOwnTourButton())
 
-            if(owner.hasPermission(ServerTourPermissionRegistry.REVIEWER)) {
+            if (owner.hasPermission(ServerTourPermissionRegistry.REVIEWER)) {
                 action(createViewSubmittedToursButton())
+            }
+
+            if (owner.hasPermission(ServerTourPermissionRegistry.SHOWCASE)) {
+                action(createShowcaseTourButton())
             }
         }
     }
@@ -48,7 +53,7 @@ private fun createOwnTourButton(): ActionButton = actionButton {
 }
 
 private fun listOwnTours(owner: UUID): ActionButton = actionButton {
-    label { text("Eigene Einreichungen") }
+    label { info("Eigene Einreichungen") }
 
     action {
         playerCallback {
@@ -59,9 +64,22 @@ private fun listOwnTours(owner: UUID): ActionButton = actionButton {
     }
 }
 
+private fun createShowcaseTourButton(): ActionButton = actionButton {
+    label { variableValue("Einreichungen ansehen") }
+    tooltip { info("Sieh dir alle Einreichungen an") }
+
+    action {
+        playerCallback { player ->
+            plugin.launch {
+                player.showDialog(createShowcaseTourDialog())
+            }
+        }
+    }
+}
+
 private fun createViewSubmittedToursButton(): ActionButton = actionButton {
-    label { text("Einreichungen ansehen") }
-    tooltip { info("Sieh dir alle Einreichungen an, die auf eine Überprüfung warten") }
+    label { variableValue("Einreichungen ansehen") }
+    tooltip { info("Sieh dir alle Einreichungen an, welche auf eine Überprüfung warten") }
 
     action {
         playerCallback { player ->

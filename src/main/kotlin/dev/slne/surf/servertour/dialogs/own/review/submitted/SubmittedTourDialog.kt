@@ -3,6 +3,7 @@
 package dev.slne.surf.servertour.dialogs.own.review.submitted
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.servertour.dialogs.own.review.showcase.createShowcaseTourDialog
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
@@ -13,7 +14,7 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun createSubmittedTourDialog(entry: TourEntry) = dialog {
+fun createSubmittedTourDialog(entry: TourEntry, showcase: Boolean = false) = dialog {
     base {
         title {
             primary("Tourübersicht für ")
@@ -31,7 +32,7 @@ fun createSubmittedTourDialog(entry: TourEntry) = dialog {
     type {
         multiAction {
             columns(2)
-            exitAction(backButton())
+            exitAction(backButton(showcase))
 
             action(listMembersButton(entry))
             action(listPoIsButton(entry))
@@ -42,14 +43,14 @@ fun createSubmittedTourDialog(entry: TourEntry) = dialog {
     }
 }
 
-private fun backButton() = actionButton {
+private fun backButton(showcase: Boolean) = actionButton {
     label { error("Zurück") }
     tooltip { info("Zurück zu den Einreichungen") }
 
     action {
         playerCallback {
             plugin.launch {
-                it.showDialog(createViewSubmittedToursDialog())
+                it.showDialog(if (showcase) createShowcaseTourDialog() else createViewSubmittedToursDialog())
             }
         }
     }
@@ -83,7 +84,7 @@ private fun declineButton(entry: TourEntry) = actionButton {
     }
 }
 
-private fun createEntryUpdatedNotice(accepted: Boolean) = dialog {
+private fun createEntryUpdatedNotice(accepted: Boolean, showcase: Boolean = false) = dialog {
     base {
         title { primary("Erfolgreich") }
         afterAction(DialogBase.DialogAfterAction.NONE)
@@ -106,7 +107,7 @@ private fun createEntryUpdatedNotice(accepted: Boolean) = dialog {
 
                     playerCallback {
                         plugin.launch {
-                            it.showDialog(createViewSubmittedToursDialog())
+                            it.showDialog(if (showcase) createShowcaseTourDialog() else createViewSubmittedToursDialog())
                         }
                     }
                 }
