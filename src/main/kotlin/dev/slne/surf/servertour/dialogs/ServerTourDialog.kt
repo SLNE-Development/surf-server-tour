@@ -29,7 +29,7 @@ fun serverTourDialog(owner: UUID) = dialog {
 
     type {
         multiAction {
-            columns(1)
+            columns(2)
 
             action(listOwnTours(owner))
             action(createOwnTourButton())
