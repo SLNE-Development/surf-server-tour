@@ -13,13 +13,10 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
-import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import java.util.*
-
-val SERVER_TOUR_LATEST_DIALOGS = mutableObject2ObjectMapOf<UUID, Dialog>()
 
 fun serverTourDialog(owner: UUID) = dialog {
     base {
@@ -40,12 +37,6 @@ fun serverTourDialog(owner: UUID) = dialog {
 
             if (owner.hasPermission(ServerTourPermissionRegistry.SHOWCASE)) {
                 action(createShowcaseTourButton())
-            }
-
-            val last = SERVER_TOUR_LATEST_DIALOGS[owner]
-
-            if (last != null) {
-                action(createResumeTourButton(last))
             }
         }
     }
@@ -92,9 +83,7 @@ private fun createShowcaseTourButton(): ActionButton = actionButton {
     action {
         playerCallback { player ->
             plugin.launch {
-                val dialog = createShowcaseTourDialog()
-                player.showDialog(dialog)
-                SERVER_TOUR_LATEST_DIALOGS[player.uniqueId] = dialog
+                player.showDialog(createShowcaseTourDialog())
             }
         }
     }

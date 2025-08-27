@@ -2,7 +2,6 @@
 
 package dev.slne.surf.servertour.dialogs.own.review.showcase
 
-import dev.slne.surf.servertour.dialogs.SERVER_TOUR_LATEST_DIALOGS
 import dev.slne.surf.servertour.dialogs.own.review.submitted.createSubmittedTourDialog
 import dev.slne.surf.servertour.dialogs.serverTourDialog
 import dev.slne.surf.servertour.entry.EntryManager
@@ -62,7 +61,6 @@ suspend fun createShowcaseTourDialog(): Dialog {
                             action {
                                 playerCallback { player ->
                                     player.showDialog(it.second)
-                                    SERVER_TOUR_LATEST_DIALOGS[player.uniqueId] = it.second
                                 }
                             }
                         }

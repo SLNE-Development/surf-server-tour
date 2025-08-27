@@ -3,7 +3,6 @@
 package dev.slne.surf.servertour.dialogs.own.review.submitted
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.slne.surf.servertour.dialogs.SERVER_TOUR_LATEST_DIALOGS
 import dev.slne.surf.servertour.dialogs.own.review.showcase.createShowcaseTourDialog
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
@@ -53,12 +52,7 @@ private fun backButton(showcase: Boolean) = actionButton {
     action {
         playerCallback {
             plugin.launch {
-                val dialog =
-                    if (showcase) createShowcaseTourDialog() else createViewSubmittedToursDialog()
-                it.showDialog(dialog)
-                if (showcase) {
-                    SERVER_TOUR_LATEST_DIALOGS[it.uniqueId] = dialog
-                }
+                it.showDialog(if (showcase) createShowcaseTourDialog() else createViewSubmittedToursDialog())
             }
         }
     }
@@ -131,9 +125,7 @@ private fun listMembersButton(entry: TourEntry, showcase: Boolean) = actionButto
 
     action {
         playerCallback {
-            val dialog = createSubmittedTourMembersDialog(entry, showcase)
-            it.showDialog(dialog)
-            SERVER_TOUR_LATEST_DIALOGS[it.uniqueId] = dialog
+            it.showDialog(createSubmittedTourMembersDialog(entry, showcase))
         }
     }
 }
@@ -144,9 +136,7 @@ private fun listPoIsButton(entry: TourEntry, showcase: Boolean) = actionButton {
 
     action {
         playerCallback {
-            val dialog = createSubmittedTourPoIsDialog(entry, showcase)
-            it.showDialog(dialog)
-            SERVER_TOUR_LATEST_DIALOGS[it.uniqueId] = dialog
+            it.showDialog(createSubmittedTourPoIsDialog(entry, showcase))
         }
     }
 }

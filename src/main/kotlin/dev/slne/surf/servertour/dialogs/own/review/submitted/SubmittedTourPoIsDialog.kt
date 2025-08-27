@@ -3,7 +3,6 @@
 
 package dev.slne.surf.servertour.dialogs.own.review.submitted
 
-import dev.slne.surf.servertour.dialogs.SERVER_TOUR_LATEST_DIALOGS
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
@@ -48,9 +47,7 @@ fun createSubmittedTourPoIsDialog(entry: TourEntry, showcase: Boolean = false): 
 
                         action {
                             playerCallback { player ->
-                                val dialog = createSubmittedTourPoIDialog(entry, it, showcase)
-                                player.showDialog(dialog)
-                                SERVER_TOUR_LATEST_DIALOGS[player.uniqueId] = dialog
+                                player.showDialog(createSubmittedTourPoIDialog(entry, it, showcase))
                             }
                         }
                     }
