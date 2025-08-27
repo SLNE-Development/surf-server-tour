@@ -5,7 +5,9 @@ package dev.slne.surf.servertour.dialogs
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.servertour.dialogs.own.createOwnTourDialog
 import dev.slne.surf.servertour.dialogs.own.review.showcase.createShowcaseTourDialog
+import dev.slne.surf.servertour.dialogs.own.review.submitted.createSubmittedTourDialog
 import dev.slne.surf.servertour.dialogs.own.review.submitted.createViewSubmittedToursDialog
+import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.servertour.utils.ServerTourPermissionRegistry
 import dev.slne.surf.servertour.utils.hasPermission
@@ -13,10 +15,12 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
-import io.papermc.paper.dialog.Dialog
+import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import java.util.*
+
+val SERVER_TOUR_LAST_VIEWED = mutableObject2ObjectMapOf<UUID, TourEntry>()
 
 fun serverTourDialog(owner: UUID) = dialog {
     base {
@@ -38,6 +42,10 @@ fun serverTourDialog(owner: UUID) = dialog {
             if (owner.hasPermission(ServerTourPermissionRegistry.SHOWCASE)) {
                 action(createShowcaseTourButton())
             }
+
+            SERVER_TOUR_LAST_VIEWED[owner]?.let {
+                action(createResumeTourButton(it))
+            }
         }
     }
 }
@@ -53,13 +61,13 @@ private fun createOwnTourButton(): ActionButton = actionButton {
     }
 }
 
-private fun createResumeTourButton(dialog: Dialog) = actionButton {
-    label { info("Server Tour fortsetzen") }
+private fun createResumeTourButton(entry: TourEntry) = actionButton {
+    label { success("Server Tour fortsetzen") }
     tooltip { info("Startet bei deiner letzten Ansicht") }
 
     action {
         playerCallback { player ->
-            player.showDialog(dialog)
+            player.showDialog(createSubmittedTourDialog(entry, true))
         }
     }
 }
