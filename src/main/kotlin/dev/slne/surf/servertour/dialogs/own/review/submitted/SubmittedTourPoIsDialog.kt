@@ -21,7 +21,7 @@ fun createSubmittedTourPoIsDialog(entry: TourEntry): Dialog = dialog {
 
         body {
             plainMessage(400) {
-                if(entry.members.isEmpty()) {
+                if (entry.members.isEmpty()) {
                     error("Keine PoIs")
                 } else {
                     variableKey("PoIs: ")
@@ -67,7 +67,7 @@ fun createSubmittedTourPoIsDialog(entry: TourEntry): Dialog = dialog {
 }
 
 private fun backButton(entry: TourEntry) = actionButton {
-    label { text("Zurück") }
+    label { error("Zurück") }
     tooltip { info("Zurück zur Einreichung") }
 
     action {

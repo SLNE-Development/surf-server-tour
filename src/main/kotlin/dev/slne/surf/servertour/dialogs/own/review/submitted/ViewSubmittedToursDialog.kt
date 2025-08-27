@@ -39,7 +39,7 @@ suspend fun createViewSubmittedToursDialog(): Dialog {
         type {
             if (submittedTours.isEmpty()) {
                 notice {
-                    label { text("Zurück") }
+                    label { error("Zurück") }
                     tooltip { info("Zurück zum Hauptmenü") }
 
                     action {
@@ -54,7 +54,7 @@ suspend fun createViewSubmittedToursDialog(): Dialog {
 
                     submittedTours.forEach {
                         action {
-                            label { text(it.first.name) }
+                            label { variableKey(it.first.name) }
                             tooltip { info("Einreichung ansehen: ${it.first.name}") }
 
                             action {
@@ -66,7 +66,7 @@ suspend fun createViewSubmittedToursDialog(): Dialog {
                     }
 
                     exitAction {
-                        label { text("Zurück") }
+                        label { error("Zurück") }
                         tooltip { info("Zurück zum Hauptmenü") }
 
                         action {
