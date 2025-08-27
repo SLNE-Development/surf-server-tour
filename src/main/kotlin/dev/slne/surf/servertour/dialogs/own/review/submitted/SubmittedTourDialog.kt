@@ -64,7 +64,7 @@ private fun acceptButton(entry: TourEntry) = actionButton {
             plugin.launch {
                 entry.accept()
             }
-            it.showDialog(createSubmittedTourMembersDialog(entry))
+            it.showDialog(createEntryUpdatedNotice(true))
         }
     }
 }
@@ -78,7 +78,39 @@ private fun declineButton(entry: TourEntry) = actionButton {
             plugin.launch {
                 entry.reject()
             }
-            it.showDialog(createSubmittedTourMembersDialog(entry))
+            it.showDialog(createEntryUpdatedNotice(false))
+        }
+    }
+}
+
+private fun createEntryUpdatedNotice(accepted: Boolean) = dialog {
+    base {
+        title { primary("Erfolgreich") }
+        afterAction(DialogBase.DialogAfterAction.NONE)
+
+        body {
+            plainMessage(400) {
+                if (accepted) {
+                    success("Die Einreichung wurde angenommen.")
+                } else {
+                    error("Die Einreichung wurde abgelehnt.")
+                }
+            }
+        }
+
+        type {
+            notice {
+                action {
+                    label { text("Zurück") }
+                    tooltip { info("Zurück zu dne Einreichungen") }
+
+                    playerCallback {
+                        plugin.launch {
+                            it.showDialog(createViewSubmittedToursDialog())
+                        }
+                    }
+                }
+            }
         }
     }
 }
