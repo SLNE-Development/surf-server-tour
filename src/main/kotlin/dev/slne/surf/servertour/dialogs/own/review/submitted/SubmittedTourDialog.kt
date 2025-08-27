@@ -37,8 +37,10 @@ fun createSubmittedTourDialog(entry: TourEntry, showcase: Boolean = false) = dia
             action(listMembersButton(entry))
             action(listPoIsButton(entry))
 
-            action(acceptButton(entry))
-            action(declineButton(entry))
+            if (!showcase) {
+                action(acceptButton(entry))
+                action(declineButton(entry))
+            }
         }
     }
 }

@@ -25,7 +25,7 @@ fun serverTourDialog(owner: UUID) = dialog {
 
     type {
         multiAction {
-            columns(2)
+            columns(1)
 
             action(listOwnTours(owner))
             action(createOwnTourButton())
@@ -42,7 +42,7 @@ fun serverTourDialog(owner: UUID) = dialog {
 }
 
 private fun createOwnTourButton(): ActionButton = actionButton {
-    label { text("Einreichung erstellen") }
+    label { info("Einreichung erstellen") }
     tooltip { info("Erstellt eine neue Einreichung") }
 
     action {
@@ -65,7 +65,7 @@ private fun listOwnTours(owner: UUID): ActionButton = actionButton {
 }
 
 private fun createShowcaseTourButton(): ActionButton = actionButton {
-    label { variableValue("Einreichungen ansehen") }
+    label { variableValue("Server Tour") }
     tooltip { info("Sieh dir alle Einreichungen an") }
 
     action {
