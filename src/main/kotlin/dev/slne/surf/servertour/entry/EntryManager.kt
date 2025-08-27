@@ -130,6 +130,7 @@ object EntryManager {
                 it.description = poi.description
                 it.location = poi.location
                 it.updatedAt = poi.updatedAt
+                it.status = poi.status
             }
         }
     }
@@ -142,6 +143,7 @@ object EntryManager {
             it.description = entry.description
             it.updatedAt = entry.updatedAt
             it.location = entry.location
+            it.status = entry.status
         }
     }
 
