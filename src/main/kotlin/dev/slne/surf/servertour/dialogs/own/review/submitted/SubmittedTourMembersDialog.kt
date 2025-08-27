@@ -46,7 +46,7 @@ fun createSubmittedTourMembersDialog(entry: TourEntry, showcase: Boolean = false
                             )
                         }
                         tooltip {
-                            variableKey("Beschreibung:")
+                            variableKey("Beschreibung: ")
                             it.description?.let { desc ->
                                 variableValue(desc)
                                 return@tooltip

@@ -6,11 +6,9 @@ package dev.slne.surf.servertour.dialogs.own.review.submitted
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
-import dev.slne.surf.surfapi.bukkit.api.dialog.clearDialogs
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import dev.slne.surf.surfapi.bukkit.api.nms.NmsUseWithCaution
-import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.DialogBase
 
@@ -43,20 +41,13 @@ fun createSubmittedTourPoIsDialog(entry: TourEntry, showcase: Boolean = false): 
                     action {
                         label { text(it.name) }
                         tooltip {
-                            variableKey("Besitzer: ")
-                            variableValue(it.owner?.offlinePlayer?.name ?: "Nicht angegeben")
-                            appendNewline()
-                            variableKey("Beschreibung: ")
-                            variableValue(it.description)
-                            appendNewline(2)
-                            spacer("Klicke, um dich zum PoI zu teleportieren")
+                            spacer("Klicke, um genauere Informationen zu diesem PoI anzusehen")
                         }
                         width(200)
 
                         action {
                             playerCallback { player ->
-                                player.teleportAsync(it.location)
-                                player.clearDialogs()
+                                player.showDialog(createSubmittedTourPoIDialog(entry, it, showcase))
                             }
                         }
                     }
