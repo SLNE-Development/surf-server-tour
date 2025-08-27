@@ -60,7 +60,7 @@ private fun backButton(
 
     action {
         playerCallback { player ->
-            player.showDialog(ownTourMembersDialog(entry, editable))
+            player.showDialog(createTourMembersDialog(entry, editable))
         }
     }
 }

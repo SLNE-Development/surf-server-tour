@@ -66,7 +66,7 @@ private fun backButton(entry: TourEntry, editable: Boolean) = actionButton {
     tooltip { info("Zurück zu den Mitgliedern") }
 
     action {
-        playerCallback { it.showDialog(ownTourMembersDialog(entry, editable)) }
+        playerCallback { it.showDialog(createTourMembersDialog(entry, editable)) }
     }
 }
 

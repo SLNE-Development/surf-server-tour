@@ -23,6 +23,11 @@ object EntryManager {
             .map { it.toApi() }
     }
 
+    suspend fun listEntries() = newSuspendedTransaction(Dispatchers.IO) {
+        EntryModel.find { EntryTable.server eq config.serverName }
+            .map { it.toApi() }
+    }
+
     suspend fun createEntry(entry: TourEntry) = newSuspendedTransaction(Dispatchers.IO) {
         val dbEntry = EntryModel.new {
             this.server = entry.server

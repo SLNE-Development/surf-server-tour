@@ -13,7 +13,7 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun ownTourMembersDialog(entry: TourEntry, editable: Boolean): Dialog = dialog {
+fun createTourMembersDialog(entry: TourEntry, editable: Boolean): Dialog = dialog {
     val members = buildDialogList(entry, editable)
 
     base {

@@ -4,7 +4,10 @@ package dev.slne.surf.servertour.dialogs
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.servertour.dialogs.own.createOwnTourDialog
+import dev.slne.surf.servertour.dialogs.own.review.submitted.createViewSubmittedToursDialog
 import dev.slne.surf.servertour.plugin
+import dev.slne.surf.servertour.utils.ServerTourPermissionRegistry
+import dev.slne.surf.servertour.utils.hasPermission
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
@@ -21,10 +24,14 @@ fun serverTourDialog(owner: UUID) = dialog {
 
     type {
         multiAction {
-            columns(1)
+            columns(2)
 
             action(listOwnTours(owner))
             action(createOwnTourButton())
+
+            if(owner.hasPermission(ServerTourPermissionRegistry.REVIEWER)) {
+                action(createViewSubmittedToursButton())
+            }
         }
     }
 }
@@ -47,6 +54,19 @@ private fun listOwnTours(owner: UUID): ActionButton = actionButton {
         playerCallback {
             plugin.launch {
                 it.showDialog(listOwnToursDialog(owner))
+            }
+        }
+    }
+}
+
+private fun createViewSubmittedToursButton(): ActionButton = actionButton {
+    label { text("Einreichungen ansehen") }
+    tooltip { info("Sieh dir alle Einreichungen an, die auf eine Überprüfung warten") }
+
+    action {
+        playerCallback { player ->
+            plugin.launch {
+                player.showDialog(createViewSubmittedToursDialog())
             }
         }
     }
