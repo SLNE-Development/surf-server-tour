@@ -43,7 +43,7 @@ fun createSubmittedTourDialog(entry: TourEntry) = dialog {
 }
 
 private fun backButton() = actionButton {
-    label { text("Zurück") }
+    label { error("Zurück") }
     tooltip { info("Zurück zu den Einreichungen") }
 
     action {
@@ -56,7 +56,7 @@ private fun backButton() = actionButton {
 }
 
 private fun acceptButton(entry: TourEntry) = actionButton {
-    label { text("Annehmen") }
+    label { success("Annehmen") }
     tooltip { info("Klicke, um die Tour zu genehmigen") }
 
     action {
@@ -70,7 +70,7 @@ private fun acceptButton(entry: TourEntry) = actionButton {
 }
 
 private fun declineButton(entry: TourEntry) = actionButton {
-    label { text("Ablehnen") }
+    label { error("Ablehnen") }
     tooltip { info("Klicke, um die Tour zu abzulehnen") }
 
     action {
