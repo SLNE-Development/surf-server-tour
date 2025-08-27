@@ -34,8 +34,8 @@ fun createSubmittedTourDialog(entry: TourEntry, showcase: Boolean = false) = dia
             columns(2)
             exitAction(backButton(showcase))
 
-            action(listMembersButton(entry))
-            action(listPoIsButton(entry))
+            action(listMembersButton(entry, showcase))
+            action(listPoIsButton(entry, showcase))
 
             if (!showcase) {
                 action(acceptButton(entry))
@@ -119,21 +119,21 @@ private fun createEntryUpdatedNotice(accepted: Boolean, showcase: Boolean = fals
 }
 
 
-private fun listMembersButton(entry: TourEntry) = actionButton {
+private fun listMembersButton(entry: TourEntry, showcase: Boolean) = actionButton {
     label { text("Mitglieder") }
     tooltip { info("Zeige die Mitglieder der Einreichung an") }
 
     action {
-        playerCallback { it.showDialog(createSubmittedTourMembersDialog(entry)) }
+        playerCallback { it.showDialog(createSubmittedTourMembersDialog(entry, showcase)) }
     }
 }
 
-private fun listPoIsButton(entry: TourEntry) = actionButton {
+private fun listPoIsButton(entry: TourEntry, showcase: Boolean) = actionButton {
     label { text("PoIs") }
     tooltip { info("Zeige die PoIs der Einreichung an") }
 
     action {
-        playerCallback { it.showDialog(createSubmittedTourPoIsDialog(entry)) }
+        playerCallback { it.showDialog(createSubmittedTourPoIsDialog(entry, showcase)) }
     }
 }
 

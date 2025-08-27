@@ -2,27 +2,22 @@
 
 package dev.slne.surf.servertour.dialogs.own.review.submitted
 
-import dev.slne.surf.servertour.dialogs.own.buildOwnTourTitle
-import dev.slne.surf.servertour.dialogs.own.member.oneMemberDialog
-import dev.slne.surf.servertour.dialogs.own.ownTourDialog
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
-import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun createSubmittedTourMembersDialog(entry: TourEntry): Dialog = dialog {
+fun createSubmittedTourMembersDialog(entry: TourEntry, showcase: Boolean = false): Dialog = dialog {
     base {
         title { primary("Mitglieder der Einreichung") }
         afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
             plainMessage(400) {
-                if(entry.members.isEmpty()) {
+                if (entry.members.isEmpty()) {
                     error("Keine Mitglieder")
                 } else {
                     variableKey("Mitglieder: ")
@@ -34,11 +29,11 @@ fun createSubmittedTourMembersDialog(entry: TourEntry): Dialog = dialog {
 
     type {
         if (entry.members.isEmpty()) {
-            notice(backButton(entry))
+            notice(backButton(entry, showcase))
         } else {
             multiAction {
                 columns(3)
-                exitAction(backButton(entry))
+                exitAction(backButton(entry, showcase))
 
                 entry.members.forEach {
                     action {
@@ -66,13 +61,13 @@ fun createSubmittedTourMembersDialog(entry: TourEntry): Dialog = dialog {
     }
 }
 
-private fun backButton(entry: TourEntry) = actionButton {
+private fun backButton(entry: TourEntry, showcase: Boolean) = actionButton {
     label { text("Zurück") }
     tooltip { info("Zurück zur Einreichung") }
 
     action {
         playerCallback { player ->
-            player.showDialog(createSubmittedTourDialog(entry))
+            player.showDialog(createSubmittedTourDialog(entry, showcase))
         }
     }
 }

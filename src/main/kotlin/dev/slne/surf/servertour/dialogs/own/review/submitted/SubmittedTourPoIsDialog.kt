@@ -14,7 +14,7 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-fun createSubmittedTourPoIsDialog(entry: TourEntry): Dialog = dialog {
+fun createSubmittedTourPoIsDialog(entry: TourEntry, showcase: Boolean = false): Dialog = dialog {
     base {
         title { primary("PoIs der Einreichung") }
         afterAction(DialogBase.DialogAfterAction.NONE)
@@ -33,11 +33,11 @@ fun createSubmittedTourPoIsDialog(entry: TourEntry): Dialog = dialog {
 
     type {
         if (entry.poi.isEmpty()) {
-            notice(backButton(entry))
+            notice(backButton(entry, showcase))
         } else {
             multiAction {
                 columns(3)
-                exitAction(backButton(entry))
+                exitAction(backButton(entry, showcase))
 
                 entry.poi.forEach {
                     action {
@@ -66,13 +66,13 @@ fun createSubmittedTourPoIsDialog(entry: TourEntry): Dialog = dialog {
     }
 }
 
-private fun backButton(entry: TourEntry) = actionButton {
+private fun backButton(entry: TourEntry, showcase: Boolean) = actionButton {
     label { error("Zurück") }
     tooltip { info("Zurück zur Einreichung") }
 
     action {
         playerCallback { player ->
-            player.showDialog(createSubmittedTourDialog(entry))
+            player.showDialog(createSubmittedTourDialog(entry, showcase))
         }
     }
 }
