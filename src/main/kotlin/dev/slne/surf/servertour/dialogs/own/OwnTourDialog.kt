@@ -62,7 +62,7 @@ fun buildTourBody(entry: TourEntry) = buildText {
     variableValue("(${pois.size})")
     appendNewline()
     if (pois.isNotEmpty()) {
-        variableValue(pois.joinToString(", ") { it.name })
+        variableValue(pois.sortedBy { it.name }.joinToString(", ") { it.name })
     } else {
         variableValue("Keine POIs vorhanden")
     }
