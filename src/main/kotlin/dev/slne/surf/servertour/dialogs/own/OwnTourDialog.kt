@@ -24,7 +24,7 @@ import io.papermc.paper.registry.data.dialog.DialogBase
 import net.kyori.adventure.text.Component
 
 fun buildOwnTourTitle(entry: TourEntry, vararg subs: Component) = buildText {
-    primary("Eigene Einreichungen")
+    primary("Einreichungen")
     spacer(" - ")
     append(entry)
 
