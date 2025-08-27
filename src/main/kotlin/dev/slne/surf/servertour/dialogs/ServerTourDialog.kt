@@ -92,7 +92,9 @@ private fun createShowcaseTourButton(): ActionButton = actionButton {
     action {
         playerCallback { player ->
             plugin.launch {
-                player.showDialog(createShowcaseTourDialog())
+                val dialog = createShowcaseTourDialog()
+                player.showDialog(dialog)
+                SERVER_TOUR_LATEST_DIALOGS[player.uniqueId] = dialog
             }
         }
     }
