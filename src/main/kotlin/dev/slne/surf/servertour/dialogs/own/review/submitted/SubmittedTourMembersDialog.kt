@@ -52,9 +52,6 @@ fun createSubmittedTourMembersDialog(entry: TourEntry): Dialog = dialog {
                         }
                         tooltip {
                             variableKey("Beschreibung:")
-                            appendNewline()
-                            appendNewline()
-
                             it.description?.let { desc ->
                                 variableValue(desc)
                                 return@tooltip

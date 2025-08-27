@@ -35,6 +35,9 @@ fun createSubmittedTourDialog(entry: TourEntry) = dialog {
 
             action(listMembersButton(entry))
             action(listPoIsButton(entry))
+
+            action(acceptButton(entry))
+            action(declineButton(entry))
         }
     }
 }
@@ -52,6 +55,35 @@ private fun backButton() = actionButton {
     }
 }
 
+private fun acceptButton(entry: TourEntry) = actionButton {
+    label { text("Annehmen") }
+    tooltip { info("Klicke, um die Tour zu genehmigen") }
+
+    action {
+        playerCallback {
+            plugin.launch {
+                entry.accept()
+            }
+            it.showDialog(createSubmittedTourMembersDialog(entry))
+        }
+    }
+}
+
+private fun declineButton(entry: TourEntry) = actionButton {
+    label { text("Ablehnen") }
+    tooltip { info("Klicke, um die Tour zu abzulehnen") }
+
+    action {
+        playerCallback {
+            plugin.launch {
+                entry.reject()
+            }
+            it.showDialog(createSubmittedTourMembersDialog(entry))
+        }
+    }
+}
+
+
 private fun listMembersButton(entry: TourEntry) = actionButton {
     label { text("Mitglieder") }
     tooltip { info("Zeige die Mitglieder der Einreichung an") }
@@ -62,8 +94,8 @@ private fun listMembersButton(entry: TourEntry) = actionButton {
 }
 
 private fun listPoIsButton(entry: TourEntry) = actionButton {
-    label { text("POIs") }
-    tooltip { info("Zeige die POIs der Einreichung an") }
+    label { text("PoIs") }
+    tooltip { info("Zeige die PoIs der Einreichung an") }
 
     action {
         playerCallback { it.showDialog(createSubmittedTourPoIsDialog(entry)) }
@@ -93,12 +125,12 @@ fun buildTourBody(entry: TourEntry) = buildText {
     }
     appendNewline(2)
 
-    val pois = entry.poi
+    val poIs = entry.poi
     variableKey("POIs ")
-    variableValue("(${pois.size})")
+    variableValue("(${poIs.size})")
     appendNewline()
-    if (pois.isNotEmpty()) {
-        variableValue(pois.joinToString(", ") { it.name })
+    if (poIs.isNotEmpty()) {
+        variableValue(poIs.joinToString(", ") { it.name })
     } else {
         variableValue("Keine POIs vorhanden")
     }
