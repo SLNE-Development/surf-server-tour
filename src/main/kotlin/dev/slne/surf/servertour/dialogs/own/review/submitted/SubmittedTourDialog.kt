@@ -3,8 +3,6 @@
 package dev.slne.surf.servertour.dialogs.own.review.submitted
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.slne.surf.servertour.dialogs.own.member.createTourMembersDialog
-import dev.slne.surf.servertour.dialogs.own.poi.createTourPoIsDialog
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
@@ -59,7 +57,7 @@ private fun listMembersButton(entry: TourEntry) = actionButton {
     tooltip { info("Zeige die Mitglieder der Einreichung an") }
 
     action {
-        playerCallback { it.showDialog(createTourMembersDialog(entry, false)) }
+        playerCallback { it.showDialog(createSubmittedTourMembersDialog(entry)) }
     }
 }
 
@@ -68,7 +66,7 @@ private fun listPoIsButton(entry: TourEntry) = actionButton {
     tooltip { info("Zeige die POIs der Einreichung an") }
 
     action {
-        playerCallback { it.showDialog(createTourPoIsDialog(entry, false)) }
+        playerCallback { it.showDialog(createSubmittedTourPoIsDialog(entry)) }
     }
 }
 
