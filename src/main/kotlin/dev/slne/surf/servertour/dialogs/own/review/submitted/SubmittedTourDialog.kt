@@ -182,7 +182,7 @@ fun buildTourBody(entry: TourEntry) = buildText {
     appendNewline(2)
 
     val poIs = entry.poi
-    variableKey("POIs ")
+    variableKey("POIs:")
     variableValue("(${poIs.size})")
     appendNewline()
     if (poIs.isNotEmpty()) {
