@@ -64,8 +64,29 @@ class ViewManager {
         }
     }
 
-    suspend fun quit(player: Player) {
-        exitView(player)
+    fun quitSync(player: Player) {
+        if (currentPoIViews.containsKey(player.uniqueId)) {
+            val loc = previousLocations.remove(player.uniqueId)
+                ?: error("No previous location found for player ${player.name}")
+            currentPoIViews.remove(player.uniqueId)
+
+            player.gameMode = GameMode.SURVIVAL
+//            player.teleport(loc)
+            plugin.launch(plugin.regionDispatcher(loc)) {
+                player.teleport(loc)
+            }
+        } else if (currentTourViews.containsKey(player.uniqueId)) {
+            val loc = previousLocations.remove(player.uniqueId)
+                ?: error("No previous location found for player ${player.name}")
+            currentTourViews.remove(player.uniqueId)
+
+            player.gameMode = GameMode.SURVIVAL
+//            player.teleport(loc)
+
+            plugin.launch(plugin.regionDispatcher(loc)) {
+                player.teleport(loc)
+            }
+        }
     }
 
     suspend fun shutdown() {

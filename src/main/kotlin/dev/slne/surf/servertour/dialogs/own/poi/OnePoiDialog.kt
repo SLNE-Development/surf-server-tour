@@ -93,7 +93,11 @@ fun onePoiDialog(
                 exitAction(backButton(entry, editable))
             }
         } else {
-            notice(backButton(entry, editable))
+            multiAction {
+                columns(2)
+                backButton(entry, editable)
+                action(viewButton(poi))
+            }
         }
     }
 }
