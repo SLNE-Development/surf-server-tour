@@ -8,6 +8,7 @@ import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.Poi
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
+import dev.slne.surf.servertour.view.viewManager
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
@@ -84,11 +85,25 @@ fun onePoiDialog(
                 action(changeLocationButton(entry, poi, editable))
                 action(changeOwnerButton(entry, poi, editable))
                 action(removePoiButton(entry, poi, editable))
+                action(viewButton(poi))
 
                 exitAction(backButton(entry, editable))
             }
         } else {
             notice(backButton(entry, editable))
+        }
+    }
+}
+
+private fun viewButton(poi: Poi) = actionButton {
+    label { text("PoI Ansehen") }
+    tooltip { info("Teleportiert dich für 5 Sekunden zu diesem PoI") }
+
+    action {
+        playerCallback {
+            plugin.launch {
+                viewManager.viewPoi(it, poi)
+            }
         }
     }
 }

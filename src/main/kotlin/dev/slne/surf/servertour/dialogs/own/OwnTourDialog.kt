@@ -13,6 +13,7 @@ import dev.slne.surf.servertour.dialogs.own.poi.ownTourPoisDialog
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
+import dev.slne.surf.servertour.view.viewManager
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
@@ -118,8 +119,22 @@ fun ownTourDialog(
             }
 
             action(removeEntryButton(entry, editable))
+            action(viewButton(entry))
 
             exitAction(backButton())
+        }
+    }
+}
+
+private fun viewButton(entry: TourEntry) = actionButton {
+    label { text("Tour ansehen") }
+    tooltip { info("Teleportiert dich für 5 Sekunden zu deiner Tour") }
+
+    action {
+        playerCallback {
+            plugin.launch {
+                viewManager.viewTour(it, entry)
+            }
         }
     }
 }
