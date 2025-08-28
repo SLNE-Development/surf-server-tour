@@ -5,6 +5,8 @@ import com.github.shynixn.mccoroutine.folia.regionDispatcher
 import dev.slne.surf.servertour.entry.Poi
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
+import dev.slne.surf.servertour.utils.setOfflineGameMode
+import dev.slne.surf.servertour.utils.setOfflineLocation
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
@@ -70,19 +72,15 @@ class ViewManager {
                 ?: error("No previous location found for player ${player.name}")
             currentPoIViews.remove(player.uniqueId)
 
-            player.gameMode = GameMode.SURVIVAL
-            plugin.launch(plugin.regionDispatcher(loc)) {
-                player.teleport(loc)
-            }
+            player.setOfflineGameMode(GameMode.SURVIVAL)
+            player.setOfflineLocation(loc)
         } else if (currentTourViews.containsKey(player.uniqueId)) {
             val loc = previousLocations.remove(player.uniqueId)
                 ?: error("No previous location found for player ${player.name}")
             currentTourViews.remove(player.uniqueId)
 
-            player.gameMode = GameMode.SURVIVAL
-            plugin.launch(plugin.regionDispatcher(loc)) {
-                player.teleport(loc)
-            }
+            player.setOfflineGameMode(GameMode.SURVIVAL)
+            player.setOfflineLocation(loc)
         }
     }
 
