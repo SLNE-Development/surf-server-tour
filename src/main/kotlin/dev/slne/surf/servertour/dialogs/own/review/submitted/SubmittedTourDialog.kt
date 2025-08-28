@@ -23,7 +23,7 @@ fun createSubmittedTourDialog(entry: TourEntry, showcase: Boolean = false) = dia
             primary("Tourübersicht für ")
             variableValue(entry.name)
         }
-        afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
+        afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
             plainMessage(400) {
