@@ -6,7 +6,9 @@ import dev.slne.surf.servertour.commands.serverTourCommand
 import dev.slne.surf.servertour.database.tables.EntryTable
 import dev.slne.surf.servertour.database.tables.MemberTable
 import dev.slne.surf.servertour.database.tables.PoiTable
+import dev.slne.surf.servertour.view.ViewListener
 import dev.slne.surf.servertour.view.viewManager
+import dev.slne.surf.surfapi.bukkit.api.event.register
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -38,6 +40,8 @@ class SurfServerTour : SuspendingJavaPlugin() {
     override suspend fun onEnableAsync() {
         serverTourCommand()
         viewManager.startTask()
+
+        ViewListener().register()
     }
 
     override suspend fun onDisableAsync() {

@@ -25,6 +25,8 @@ class ViewListener : Listener {
         player.sendText {
             appendPrefix()
             error("Du kannst dich nicht bewegen, während du dir einen Eintrag ansiehst!")
+            appendSpace()
+            info("Solle ein Fehler auftreten, kannst du /servertour exitView benutzen.")
         }
     }
 }
