@@ -5,6 +5,7 @@ import com.github.shynixn.mccoroutine.folia.regionDispatcher
 import dev.slne.surf.servertour.entry.Poi
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
+import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import kotlinx.coroutines.withContext
@@ -73,6 +74,8 @@ class ViewManager {
             val player = plugin.server.getPlayer(uuid) ?: return@forEach
             exitViewTour(player)
         }
+
+        task.cancel()
     }
 
     suspend fun exitView(player: Player): Boolean {
@@ -87,25 +90,41 @@ class ViewManager {
         return false
     }
 
-    suspend fun startTask() {
+    fun startTask() {
         task = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, {
             val now = System.currentTimeMillis()
 
             currentTourViews.entries.toList().forEach { (uuid, pair) ->
-                if (pair.second <= now - TimeUnit.SECONDS.toMillis(5)) {
-                    val player = plugin.server.getPlayer(uuid) ?: return@forEach
+                val player = plugin.server.getPlayer(uuid) ?: return@forEach
+                val remaining = (pair.second + TimeUnit.SECONDS.toMillis(5) - now) / 1000
+
+                if (remaining <= 0) {
                     plugin.launch {
                         exitViewTour(player)
                     }
+                } else {
+                    player.sendActionBar(buildText {
+                        info("Du wirst in ")
+                        variableValue("$remaining")
+                        info(" Sekunden zurück teleportiert")
+                    })
                 }
             }
 
             currentPoIViews.entries.toList().forEach { (uuid, pair) ->
-                if (pair.second <= now - TimeUnit.SECONDS.toMillis(5)) {
-                    val player = plugin.server.getPlayer(uuid) ?: return@forEach
+                val player = plugin.server.getPlayer(uuid) ?: return@forEach
+                val remaining = (pair.second + TimeUnit.SECONDS.toMillis(5) - now) / 1000
+
+                if (remaining <= 0) {
                     plugin.launch {
                         exitViewPoi(player)
                     }
+                } else {
+                    player.sendActionBar(buildText {
+                        info("Du wirst in ")
+                        variableValue("$remaining")
+                        info(" Sekunden zurück teleportiert")
+                    })
                 }
             }
 

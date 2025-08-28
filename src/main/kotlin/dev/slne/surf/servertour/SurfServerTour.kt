@@ -37,7 +37,6 @@ class SurfServerTour : SuspendingJavaPlugin() {
 
     override suspend fun onEnableAsync() {
         serverTourCommand()
-
         viewManager.startTask()
     }
 
