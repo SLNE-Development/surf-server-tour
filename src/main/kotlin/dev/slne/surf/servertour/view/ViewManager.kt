@@ -22,6 +22,7 @@ class ViewManager {
     val currentTourViews = mutableObject2ObjectMapOf<UUID, Pair<TourEntry, Long>>()
     val currentPoIViews = mutableObject2ObjectMapOf<UUID, Pair<Poi, Long>>()
     val previousLocations = mutableObject2ObjectMapOf<UUID, Location>()
+    val previousGameModes = mutableObject2ObjectMapOf<UUID, GameMode>()
 
     val viewTimeout = TimeUnit.SECONDS.toMillis(5L)
 
@@ -31,6 +32,7 @@ class ViewManager {
         withContext(plugin.regionDispatcher(poi.location)) {
             currentPoIViews[player.uniqueId] = poi to System.currentTimeMillis()
             previousLocations[player.uniqueId] = player.location
+            previousGameModes[player.uniqueId] = player.gameMode
 
             player.gameMode = GameMode.SPECTATOR
             player.teleportAsync(poi.location)
@@ -40,6 +42,7 @@ class ViewManager {
         withContext(plugin.regionDispatcher(entry.location)) {
             currentTourViews[player.uniqueId] = entry to System.currentTimeMillis()
             previousLocations[player.uniqueId] = player.location
+            previousGameModes[player.uniqueId] = player.gameMode
 
             player.gameMode = GameMode.SPECTATOR
             player.teleportAsync(entry.location)
@@ -49,39 +52,44 @@ class ViewManager {
     suspend fun exitViewPoi(player: Player) {
         val loc = previousLocations.remove(player.uniqueId)
             ?: error("No previous location found for player ${player.name}")
+        val previousGameMode = previousGameModes.remove(player.uniqueId)
+            ?: error("No previous game mode found for player ${player.name}")
         currentPoIViews.remove(player.uniqueId)
 
         withContext(plugin.regionDispatcher(loc)) {
             player.teleportAsync(loc)
-            player.gameMode = GameMode.SURVIVAL
+            player.gameMode = previousGameMode
         }
     }
 
     suspend fun exitViewTour(player: Player) {
         val loc = previousLocations.remove(player.uniqueId)
             ?: error("No previous location found for player ${player.name}")
+        val previousGameMode = previousGameModes.remove(player.uniqueId)
+            ?: error("No previous game mode found for player ${player.name}")
         currentTourViews.remove(player.uniqueId)
 
         withContext(plugin.regionDispatcher(loc)) {
             player.teleportAsync(loc)
-            player.gameMode = GameMode.SURVIVAL
+            player.gameMode = previousGameMode
         }
     }
 
     suspend fun quitSync(player: Player) {
+        val previousGameMode = previousGameModes.remove(player.uniqueId)
+            ?: error("No previous game mode found for player ${player.name}")
+        val loc = previousLocations.remove(player.uniqueId)
+            ?: error("No previous location found for player ${player.name}")
+
         if (currentPoIViews.containsKey(player.uniqueId)) {
-            val loc = previousLocations.remove(player.uniqueId)
-                ?: error("No previous location found for player ${player.name}")
             currentPoIViews.remove(player.uniqueId)
 
-            player.setOfflineGameMode(GameMode.SURVIVAL)
+            player.setOfflineGameMode(previousGameMode)
             player.setOfflineLocation(loc)
         } else if (currentTourViews.containsKey(player.uniqueId)) {
-            val loc = previousLocations.remove(player.uniqueId)
-                ?: error("No previous location found for player ${player.name}")
             currentTourViews.remove(player.uniqueId)
 
-            player.setOfflineGameMode(GameMode.SURVIVAL)
+            player.setOfflineGameMode(previousGameMode)
             player.setOfflineLocation(loc)
         }
     }
