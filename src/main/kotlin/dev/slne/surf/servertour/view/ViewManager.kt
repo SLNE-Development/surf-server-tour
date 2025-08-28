@@ -8,6 +8,7 @@ import dev.slne.surf.servertour.plugin
 import dev.slne.surf.servertour.utils.setOfflineGameMode
 import dev.slne.surf.servertour.utils.setOfflineLocation
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import kotlinx.coroutines.withContext
@@ -30,6 +31,14 @@ class ViewManager {
 
     suspend fun viewPoi(player: Player, poi: Poi) =
         withContext(plugin.regionDispatcher(poi.location)) {
+            if (currentPoIViews.containsKey(player.uniqueId)) {
+                player.sendText {
+                    appendPrefix()
+                    error("Du betrachtest bereits einen anderen Punkt.")
+                }
+                return@withContext
+            }
+
             currentPoIViews[player.uniqueId] = poi to System.currentTimeMillis()
             previousLocations[player.uniqueId] = player.location
             previousGameModes[player.uniqueId] = player.gameMode
@@ -40,6 +49,14 @@ class ViewManager {
 
     suspend fun viewTour(player: Player, entry: TourEntry) =
         withContext(plugin.regionDispatcher(entry.location)) {
+            if (currentTourViews.containsKey(player.uniqueId)) {
+                player.sendText {
+                    appendPrefix()
+                    error("Du betrachtest bereits eine andere Tour.")
+                }
+                return@withContext
+            }
+
             currentTourViews[player.uniqueId] = entry to System.currentTimeMillis()
             previousLocations[player.uniqueId] = player.location
             previousGameModes[player.uniqueId] = player.gameMode
