@@ -93,17 +93,20 @@ class ViewManager {
     }
 
     suspend fun quitSync(player: Player) {
-        val previousGameMode = previousGameModes.remove(player.uniqueId)
-            ?: error("No previous game mode found for player ${player.name}")
-        val loc = previousLocations.remove(player.uniqueId)
-            ?: error("No previous location found for player ${player.name}")
-
         if (currentPoIViews.containsKey(player.uniqueId)) {
+            val previousGameMode = previousGameModes.remove(player.uniqueId)
+                ?: error("No previous game mode found for player ${player.name}")
+            val loc = previousLocations.remove(player.uniqueId)
+                ?: error("No previous location found for player ${player.name}")
             currentPoIViews.remove(player.uniqueId)
 
             player.setOfflineGameMode(previousGameMode)
             player.setOfflineLocation(loc)
         } else if (currentTourViews.containsKey(player.uniqueId)) {
+            val previousGameMode = previousGameModes.remove(player.uniqueId)
+                ?: error("No previous game mode found for player ${player.name}")
+            val loc = previousLocations.remove(player.uniqueId)
+                ?: error("No previous location found for player ${player.name}")
             currentTourViews.remove(player.uniqueId)
 
             player.setOfflineGameMode(previousGameMode)
