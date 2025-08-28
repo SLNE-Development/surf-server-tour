@@ -51,7 +51,7 @@ private fun teleportButton(poi: Poi) = actionButton {
     action {
         playerCallback { player ->
             player.teleportAsync(poi.location)
-            player.clearDialogs()
+            player.clearDialogs(true)
         }
     }
 }

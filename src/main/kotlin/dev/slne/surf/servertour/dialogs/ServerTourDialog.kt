@@ -25,7 +25,7 @@ val SERVER_TOUR_LAST_VIEWED = mutableObject2ObjectMapOf<UUID, TourEntry>()
 fun serverTourDialog(owner: UUID) = dialog {
     base {
         title { primary("Server-Tour") }
-        afterAction(DialogBase.DialogAfterAction.NONE)
+        afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
     }
 
     type {

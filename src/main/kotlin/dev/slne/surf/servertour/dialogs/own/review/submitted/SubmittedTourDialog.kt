@@ -23,7 +23,7 @@ fun createSubmittedTourDialog(entry: TourEntry, showcase: Boolean = false) = dia
             primary("Tourübersicht für ")
             variableValue(entry.name)
         }
-        afterAction(DialogBase.DialogAfterAction.NONE)
+        afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
 
         body {
             plainMessage(400) {
@@ -70,7 +70,7 @@ private fun teleportButton(entry: TourEntry) = actionButton {
     action {
         playerCallback { player ->
             player.teleportAsync(entry.location)
-            player.clearDialogs()
+            player.clearDialogs(true)
         }
     }
 }
