@@ -23,6 +23,8 @@ class ViewManager {
     val currentPoIViews = mutableObject2ObjectMapOf<UUID, Pair<Poi, Long>>()
     val previousLocations = mutableObject2ObjectMapOf<UUID, Location>()
 
+    val viewTimeout = TimeUnit.SECONDS.toMillis(5L)
+
     lateinit var task: ScheduledTask
 
     suspend fun viewPoi(player: Player, poi: Poi) =
@@ -116,7 +118,7 @@ class ViewManager {
 
             currentTourViews.entries.toList().forEach { (uuid, pair) ->
                 val player = plugin.server.getPlayer(uuid) ?: return@forEach
-                val remaining = (pair.second + TimeUnit.SECONDS.toMillis(5) - now) / 1000
+                val remaining = (pair.second + viewTimeout - now) / 1000
 
                 if (remaining <= 0) {
                     plugin.launch {
@@ -133,7 +135,7 @@ class ViewManager {
 
             currentPoIViews.entries.toList().forEach { (uuid, pair) ->
                 val player = plugin.server.getPlayer(uuid) ?: return@forEach
-                val remaining = (pair.second + TimeUnit.SECONDS.toMillis(5) - now) / 1000
+                val remaining = (pair.second + viewTimeout - now) / 1000
 
                 if (remaining <= 0) {
                     plugin.launch {
