@@ -85,7 +85,7 @@ private fun listOwnTours(owner: UUID): ActionButton = actionButton {
 }
 
 private fun createShowcaseTourButton(): ActionButton = actionButton {
-    label { variableValue("Server Tour") }
+    label { variableValue("Server Tour starten") }
     tooltip { info("Sieh dir alle Einreichungen an") }
 
     action {
@@ -98,7 +98,7 @@ private fun createShowcaseTourButton(): ActionButton = actionButton {
 }
 
 private fun createViewSubmittedToursButton(): ActionButton = actionButton {
-    label { variableValue("Einreichungen ansehen") }
+    label { variableValue("Einreichungen auswerten") }
     tooltip { info("Sieh dir alle Einreichungen an, welche auf eine Überprüfung warten") }
 
     action {
