@@ -97,7 +97,9 @@ class ViewManager {
             exitViewTour(player)
         }
 
-        task.cancel()
+        if (::task.isInitialized) {
+            task.cancel()
+        }
     }
 
     suspend fun exitView(player: Player): Boolean {
