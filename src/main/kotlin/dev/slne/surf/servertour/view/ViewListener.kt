@@ -1,9 +1,12 @@
 package dev.slne.surf.servertour.view
 
+import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerQuitEvent
 
 class ViewListener : Listener {
     @EventHandler
@@ -26,7 +29,16 @@ class ViewListener : Listener {
             appendPrefix()
             error("Du kannst dich nicht bewegen, während du dir einen Eintrag ansiehst!")
             appendSpace()
-            info("Solle ein Fehler auftreten, kannst du /servertour exitView benutzen.")
+            info("Sollte ein Fehler auftreten, kannst du /servertour exitView benutzen.")
+        }
+    }
+
+    @EventHandler
+    fun onDisconnect(event: PlayerQuitEvent) {
+        val player = event.player
+
+        plugin.launch {
+            viewManager.quit(player)
         }
     }
 }

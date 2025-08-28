@@ -64,6 +64,10 @@ class ViewManager {
         }
     }
 
+    suspend fun quit(player: Player) {
+        exitView(player)
+    }
+
     suspend fun shutdown() {
         currentPoIViews.keys.forEach { uuid ->
             val player = plugin.server.getPlayer(uuid) ?: return@forEach
