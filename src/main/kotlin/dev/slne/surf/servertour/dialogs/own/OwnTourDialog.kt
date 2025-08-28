@@ -8,9 +8,9 @@ import dev.slne.surf.servertour.dialogs.listOwnToursDialog
 import dev.slne.surf.servertour.dialogs.own.information.descriptionOwnTourEntryDialog
 import dev.slne.surf.servertour.dialogs.own.information.renameOwnTourEntryDialog
 import dev.slne.surf.servertour.dialogs.own.member.addMemberToOwnTourDialog
-import dev.slne.surf.servertour.dialogs.own.member.ownTourMembersDialog
+import dev.slne.surf.servertour.dialogs.own.member.createTourMembersDialog
 import dev.slne.surf.servertour.dialogs.own.poi.createPoiDialog
-import dev.slne.surf.servertour.dialogs.own.poi.ownTourPoisDialog
+import dev.slne.surf.servertour.dialogs.own.poi.createTourPoIsDialog
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
@@ -66,7 +66,7 @@ fun buildTourBody(entry: TourEntry) = buildText {
     variableValue("(${pois.size})")
     appendNewline()
     if (pois.isNotEmpty()) {
-        variableValue(pois.joinToString(", ") { it.name })
+        variableValue(pois.sortedBy { it.name }.joinToString(", ") { it.name })
     } else {
         variableValue("Keine POIs vorhanden")
     }
@@ -226,7 +226,7 @@ private fun listPoisButton(entry: TourEntry, editable: Boolean) = actionButton {
     tooltip { info("Zeige die POIs der Einreichung an") }
 
     action {
-        playerCallback { it.showDialog(ownTourPoisDialog(entry, editable)) }
+        playerCallback { it.showDialog(createTourPoIsDialog(entry, editable)) }
     }
 }
 
@@ -244,7 +244,7 @@ private fun listMembersButton(entry: TourEntry, editable: Boolean) = actionButto
     tooltip { info("Zeige die Mitglieder der Einreichung an") }
 
     action {
-        playerCallback { it.showDialog(ownTourMembersDialog(entry, editable)) }
+        playerCallback { it.showDialog(createTourMembersDialog(entry, editable)) }
     }
 }
 

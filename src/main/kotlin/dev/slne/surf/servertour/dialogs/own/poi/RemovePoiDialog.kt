@@ -57,7 +57,7 @@ private fun backButton(entry: TourEntry, editable: Boolean): ActionButton = acti
 
     action {
         playerCallback {
-            it.showDialog(ownTourPoisDialog(entry, editable))
+            it.showDialog(createTourPoIsDialog(entry, editable))
         }
     }
 }

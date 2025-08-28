@@ -121,7 +121,7 @@ private fun backButton(entry: TourEntry, editable: Boolean) = actionButton {
     tooltip { info("Zurück zu den POIs") }
 
     action {
-        playerCallback { it.showDialog(ownTourPoisDialog(entry, editable)) }
+        playerCallback { it.showDialog(createTourPoIsDialog(entry, editable)) }
     }
 }
 
