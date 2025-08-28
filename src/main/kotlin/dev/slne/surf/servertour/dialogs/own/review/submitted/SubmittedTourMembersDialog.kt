@@ -45,14 +45,14 @@ fun createSubmittedTourMembersDialog(entry: TourEntry, showcase: Boolean = false
                                     ?: it.offlinePlayer.uniqueId.toString()
                             )
                         }
-                        tooltip {
-                            variableKey("Beschreibung: ")
-                            it.description?.let { desc ->
-                                variableValue(desc)
-                                return@tooltip
+                        val description = it.description
+                        if (description != null && description.isNotBlank()) {
+                            tooltip {
+                                variableKey("Beschreibung: ")
+                                variableValue(description)
                             }
-
-                            variableValue("Keine Beschreibung")
+                        } else {
+                            tooltip { info("Ohne Beschreibung") }
                         }
                     }
                 }

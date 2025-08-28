@@ -1,4 +1,5 @@
 @file:Suppress("UnstableApiUsage")
+@file:OptIn(NmsUseWithCaution::class)
 
 package dev.slne.surf.servertour.dialogs.own.review.submitted
 
@@ -8,8 +9,10 @@ import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
+import dev.slne.surf.surfapi.bukkit.api.dialog.clearDialogs
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
+import dev.slne.surf.surfapi.bukkit.api.nms.NmsUseWithCaution
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.registry.data.dialog.DialogBase
@@ -41,6 +44,8 @@ fun createSubmittedTourDialog(entry: TourEntry, showcase: Boolean = false) = dia
                 action(acceptButton(entry))
                 action(declineButton(entry))
             }
+
+            action(teleportButton(entry))
         }
     }
 }
@@ -54,6 +59,18 @@ private fun backButton(showcase: Boolean) = actionButton {
             plugin.launch {
                 it.showDialog(if (showcase) createShowcaseTourDialog() else createViewSubmittedToursDialog())
             }
+        }
+    }
+}
+
+private fun teleportButton(entry: TourEntry) = actionButton {
+    label { info("Teleportieren") }
+    tooltip { info("Teleportiere dich zu dieser Tour") }
+
+    action {
+        playerCallback { player ->
+            player.teleportAsync(entry.location)
+            player.clearDialogs()
         }
     }
 }
