@@ -20,7 +20,7 @@ fun createSubmittedTourPoIsDialog(entry: TourEntry, showcase: Boolean = false): 
 
         body {
             plainMessage(400) {
-                if (entry.members.isEmpty()) {
+                if (entry.poi.isEmpty()) {
                     error("Keine PoIs")
                 } else {
                     variableKey("PoIs: ")
