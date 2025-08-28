@@ -8,6 +8,8 @@ import dev.slne.surf.servertour.utils.ServerTourPermissionRegistry
 fun serverTourCommand() = commandAPICommand("servertour") {
     withPermission(ServerTourPermissionRegistry.BASE)
 
+    serverTourViewExitCommand()
+
     playerExecutor { player, _ ->
         player.showDialog(serverTourDialog(player.uniqueId))
     }

@@ -1,4 +1,5 @@
 @file:Suppress("UnstableApiUsage")
+@file:OptIn(NmsUseWithCaution::class)
 
 package dev.slne.surf.servertour.dialogs.own.poi
 
@@ -8,10 +9,13 @@ import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.Poi
 import dev.slne.surf.servertour.entry.TourEntry
 import dev.slne.surf.servertour.plugin
+import dev.slne.surf.servertour.view.viewManager
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
+import dev.slne.surf.surfapi.bukkit.api.dialog.clearDialogs
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
+import dev.slne.surf.surfapi.bukkit.api.nms.NmsUseWithCaution
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
@@ -27,6 +31,21 @@ fun buildPoiBody(entry: TourEntry, poi: Poi) = buildText {
     } else {
         append(owner)
     }
+    appendNewline(2)
+
+    variableKey("Position: ")
+    appendNewline()
+    variableKey("X: ")
+    variableValue(poi.location.x.toInt())
+    spacer(", ")
+    variableKey("Y: ")
+    variableValue(poi.location.y.toInt())
+    spacer(", ")
+    variableKey("Z: ")
+    variableValue(poi.location.z.toInt())
+    spacer(" in ")
+    variableKey("Welt: ")
+    variableValue(poi.location.world?.name ?: "Unbekannt")
     appendNewline(2)
 
     variableKey("Beschreibung: ")
@@ -50,7 +69,7 @@ fun onePoiDialog(
         externalTitle {
             text(poi.name)
         }
-        afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
+        afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
             plainMessage(400) {
@@ -69,11 +88,30 @@ fun onePoiDialog(
                 action(changeLocationButton(entry, poi, editable))
                 action(changeOwnerButton(entry, poi, editable))
                 action(removePoiButton(entry, poi, editable))
+                action(viewButton(poi))
 
                 exitAction(backButton(entry, editable))
             }
         } else {
-            notice(backButton(entry, editable))
+            multiAction {
+                columns(2)
+                backButton(entry, editable)
+                action(viewButton(poi))
+            }
+        }
+    }
+}
+
+private fun viewButton(poi: Poi) = actionButton {
+    label { text("PoI Ansehen") }
+    tooltip { info("Teleportiert dich für 5 Sekunden zu diesem PoI") }
+
+    action {
+        playerCallback {
+            plugin.launch {
+                it.clearDialogs()
+                viewManager.viewPoi(it, poi)
+            }
         }
     }
 }
