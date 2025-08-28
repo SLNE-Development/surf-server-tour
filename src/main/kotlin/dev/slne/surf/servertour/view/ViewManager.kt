@@ -71,7 +71,6 @@ class ViewManager {
             currentPoIViews.remove(player.uniqueId)
 
             player.gameMode = GameMode.SURVIVAL
-//            player.teleport(loc)
             plugin.launch(plugin.regionDispatcher(loc)) {
                 player.teleport(loc)
             }
@@ -81,8 +80,6 @@ class ViewManager {
             currentTourViews.remove(player.uniqueId)
 
             player.gameMode = GameMode.SURVIVAL
-//            player.teleport(loc)
-
             plugin.launch(plugin.regionDispatcher(loc)) {
                 player.teleport(loc)
             }
