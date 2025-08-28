@@ -1,4 +1,5 @@
 @file:Suppress("UnstableApiUsage")
+@file:OptIn(NmsUseWithCaution::class)
 
 package dev.slne.surf.servertour.dialogs.own
 
@@ -16,8 +17,10 @@ import dev.slne.surf.servertour.plugin
 import dev.slne.surf.servertour.view.viewManager
 import dev.slne.surf.surfapi.bukkit.api.dialog.base
 import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
+import dev.slne.surf.surfapi.bukkit.api.dialog.clearDialogs
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
+import dev.slne.surf.surfapi.bukkit.api.nms.NmsUseWithCaution
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import io.papermc.paper.dialog.Dialog
@@ -86,7 +89,7 @@ fun ownTourDialog(
     base {
         title(buildOwnTourTitle(entry))
         externalTitle { text(entry.name) }
-        afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
+        afterAction(DialogBase.DialogAfterAction.NONE)
 
         body {
             plainMessage(400) {
@@ -133,6 +136,7 @@ private fun viewButton(entry: TourEntry) = actionButton {
     action {
         playerCallback {
             plugin.launch {
+                it.clearDialogs()
                 viewManager.viewTour(it, entry)
             }
         }
