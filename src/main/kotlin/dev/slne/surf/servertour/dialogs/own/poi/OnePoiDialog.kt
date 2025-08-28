@@ -29,6 +29,21 @@ fun buildPoiBody(entry: TourEntry, poi: Poi) = buildText {
     }
     appendNewline(2)
 
+    variableKey("Position: ")
+    appendNewline()
+    variableKey("X: ")
+    variableValue(poi.location.x.toInt())
+    spacer(", ")
+    variableKey("Y: ")
+    variableValue(poi.location.y.toInt())
+    spacer(", ")
+    variableKey("Z: ")
+    variableValue(poi.location.z.toInt())
+    spacer(" in ")
+    variableKey("Welt: ")
+    variableValue(poi.location.world?.name ?: "Unbekannt")
+    appendNewline(2)
+
     variableKey("Beschreibung: ")
     appendNewline()
     variableValue(poi.description.ifBlank { "Keine Beschreibung vorhanden" })
