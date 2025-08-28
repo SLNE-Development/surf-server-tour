@@ -1,0 +1,30 @@
+package dev.slne.surf.servertour.view
+
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerMoveEvent
+
+class ViewListener : Listener {
+    @EventHandler
+    fun onMove(event: PlayerMoveEvent) {
+        if (!event.hasChangedBlock()) {
+            return
+        }
+
+        val player = event.player
+
+        if (!viewManager.currentPoIViews.contains(player.uniqueId) && !viewManager.currentTourViews.contains(
+                player.uniqueId
+            )
+        ) {
+            return
+        }
+
+        event.isCancelled = true
+        player.sendText {
+            appendPrefix()
+            error("Du kannst dich nicht bewegen, während du dir einen Eintrag ansiehst!")
+        }
+    }
+}
