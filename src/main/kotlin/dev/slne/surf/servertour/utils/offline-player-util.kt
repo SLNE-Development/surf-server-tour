@@ -2,6 +2,8 @@
 
 package dev.slne.surf.servertour.utils
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.kyori.adventure.nbt.*
 import net.kyori.adventure.nbt.BinaryTagIO.Compression.GZIP
 import org.bukkit.Bukkit
@@ -36,12 +38,12 @@ private fun getPlayerFile(uuid: UUID): File? {
     return null
 }
 
-fun Player.setOfflineLocation(location: Location) {
+suspend fun Player.setOfflineLocation(location: Location) {
     this.uniqueId.setOfflineLocation(location)
 }
 
-fun UUID.setOfflineLocation(location: Location) {
-    val dataFile: File = getPlayerFile(this) ?: return
+suspend fun UUID.setOfflineLocation(location: Location) = withContext(Dispatchers.IO) {
+    val dataFile: File = getPlayerFile(this@setOfflineLocation) ?: return@withContext
     val rawTag: CompoundBinaryTag
     try {
         rawTag = BinaryTagIO.unlimitedReader()
@@ -74,7 +76,9 @@ fun UUID.setOfflineLocation(location: Location) {
         .write(builder.build(), dataFile.toPath(), GZIP)
 }
 
-private fun setGameModeInFile(gameMode: GameMode, dataFile: File) {
+private suspend fun setGameModeInFile(gameMode: GameMode, dataFile: File) = withContext(
+    Dispatchers.IO
+) {
     val rawTag = BinaryTagIO.unlimitedReader().read(dataFile.toPath(), GZIP)
     val builder = CompoundBinaryTag.builder().put(rawTag)
 
@@ -83,7 +87,7 @@ private fun setGameModeInFile(gameMode: GameMode, dataFile: File) {
     BinaryTagIO.writer().write(builder.build(), dataFile.toPath(), GZIP)
 }
 
-fun OfflinePlayer.setOfflineGameMode(gameMode: GameMode) {
+suspend fun OfflinePlayer.setOfflineGameMode(gameMode: GameMode) {
     val playerFile = getPlayerFile(this.uniqueId) ?: return
 
     try {

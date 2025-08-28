@@ -1,5 +1,7 @@
 package dev.slne.surf.servertour.view
 
+import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.servertour.plugin
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -35,6 +37,8 @@ class ViewListener : Listener {
     fun onDisconnect(event: PlayerQuitEvent) {
         val player = event.player
 
-        viewManager.quitSync(player)
+        plugin.launch {
+            viewManager.quitSync(player)
+        }
     }
 }

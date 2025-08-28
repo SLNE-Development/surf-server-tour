@@ -66,7 +66,7 @@ class ViewManager {
         }
     }
 
-    fun quitSync(player: Player) {
+    suspend fun quitSync(player: Player) {
         if (currentPoIViews.containsKey(player.uniqueId)) {
             val loc = previousLocations.remove(player.uniqueId)
                 ?: error("No previous location found for player ${player.name}")
