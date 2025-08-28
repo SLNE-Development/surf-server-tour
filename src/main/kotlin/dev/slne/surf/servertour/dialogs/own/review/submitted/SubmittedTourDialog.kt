@@ -122,7 +122,7 @@ private fun createEntryUpdatedNotice(accepted: Boolean, showcase: Boolean = fals
             notice {
                 action {
                     label { text("Zurück") }
-                    tooltip { info("Zurück zu dne Einreichungen") }
+                    tooltip { info("Zurück zu den Einreichungen") }
 
                     playerCallback {
                         plugin.launch {
