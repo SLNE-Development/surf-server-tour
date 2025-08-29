@@ -56,7 +56,7 @@ suspend fun createShowcaseTourDialog(): Dialog {
 
                     acceptedTours.forEach {
                         action {
-                            width(200)
+                            width(300)
                             label { variableKey(it.first.name) }
                             tooltip { info("Einreichung ansehen: ${it.first.name}") }
 
