@@ -46,7 +46,9 @@ fun serverTourDialog(owner: UUID) = dialog {
             }
 
             SERVER_TOUR_LAST_VIEWED[owner]?.let {
-                action(createResumeTourButton(it))
+                if (owner.hasPermission(ServerTourPermissionRegistry.SHOWCASE)) {
+                    action(createResumeTourButton(it))
+                }
             }
         }
     }
