@@ -52,10 +52,11 @@ suspend fun createShowcaseTourDialog(): Dialog {
                 }
             } else {
                 multiAction {
-                    columns(3)
+                    columns(1)
 
                     acceptedTours.forEach {
                         action {
+                            width(200)
                             label { variableKey(it.first.name) }
                             tooltip { info("Einreichung ansehen: ${it.first.name}") }
 
