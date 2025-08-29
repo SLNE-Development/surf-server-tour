@@ -74,6 +74,8 @@ private fun confirmSortButton(
                     variableValue(newName)
                     success(" umbenannt.")
                 }
+
+                clicker.showDialog(createSortShowcaseToursDialog())
             }
         }
     }
