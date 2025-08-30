@@ -24,8 +24,8 @@ val SERVER_TOUR_LAST_VIEWED = mutableObject2ObjectMapOf<UUID, TourEntry>()
 
 fun serverTourDialog(owner: UUID) = dialog {
     base {
-        title { primary("Server Tour") }
-        afterAction(DialogBase.DialogAfterAction.NONE)
+        title { primary("Server-Tour") }
+        afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
     }
 
     type {
@@ -62,7 +62,7 @@ private fun createOwnTourButton(): ActionButton = actionButton {
 }
 
 private fun createResumeTourButton(entry: TourEntry) = actionButton {
-    label { success("Server Tour fortsetzen") }
+    label { success("Server-Tour fortsetzen") }
     tooltip { info("Startet bei deiner letzten Ansicht") }
 
     action {
@@ -85,7 +85,7 @@ private fun listOwnTours(owner: UUID): ActionButton = actionButton {
 }
 
 private fun createShowcaseTourButton(): ActionButton = actionButton {
-    label { variableValue("Server Tour starten") }
+    label { variableValue("Server-Tour starten") }
     tooltip { info("Sieh dir alle Einreichungen an") }
 
     action {
