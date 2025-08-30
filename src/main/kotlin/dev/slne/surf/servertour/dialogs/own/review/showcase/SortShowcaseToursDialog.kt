@@ -2,8 +2,6 @@
 
 package dev.slne.surf.servertour.dialogs.own.review.showcase
 
-import dev.slne.surf.servertour.dialogs.SERVER_TOUR_LAST_VIEWED
-import dev.slne.surf.servertour.dialogs.own.review.submitted.createSubmittedTourDialog
 import dev.slne.surf.servertour.dialogs.serverTourDialog
 import dev.slne.surf.servertour.entry.EntryManager
 import dev.slne.surf.servertour.entry.EntryStatus
@@ -16,22 +14,22 @@ import dev.slne.surf.surfapi.core.api.util.toObjectList
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.registry.data.dialog.DialogBase
 
-suspend fun createShowcaseTourDialog(): Dialog {
-    val acceptedTours = EntryManager.listEntries()
+suspend fun createSortShowcaseToursDialog(): Dialog {
+    val submittedTours = EntryManager.listEntries()
         .filter { it.status == EntryStatus.ACCEPTED }
         .sortedBy {
             it.name
         }
         .map {
-            it to createSubmittedTourDialog(it, true)
+            it to createSortShowcaseTourDialog(it)
         }
         .toObjectList()
     return dialog {
         base {
-            title { primary("Einreichungen") }
+            title { primary("Genehmigte Einreichungen") }
             afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
 
-            if (acceptedTours.isEmpty()) {
+            if (submittedTours.isEmpty()) {
                 body {
                     plainMessage(400) {
                         error("Es wurden keine Einreichungen gefunden")
@@ -41,7 +39,7 @@ suspend fun createShowcaseTourDialog(): Dialog {
         }
 
         type {
-            if (acceptedTours.isEmpty()) {
+            if (submittedTours.isEmpty()) {
                 notice {
                     label { error("Zurück") }
                     tooltip { info("Zurück zum Hauptmenü") }
@@ -54,11 +52,10 @@ suspend fun createShowcaseTourDialog(): Dialog {
                 }
             } else {
                 multiAction {
-                    columns(2)
+                    columns(3)
 
-                    acceptedTours.forEach {
+                    submittedTours.forEach {
                         action {
-                            width(200)
                             label { variableKey(it.first.name) }
                             tooltip {
                                 appendEmDash()
@@ -78,13 +75,12 @@ suspend fun createShowcaseTourDialog(): Dialog {
                                         ?: it.first.owner.uuid.toString()
                                 )
                                 appendNewline(2)
-                                spacer("Klicke, um die Einreichung anzusehen.")
+                                spacer("Klicke, um die Einreichung neu anzuordnen.")
                             }
 
                             action {
                                 playerCallback { player ->
                                     player.showDialog(it.second)
-                                    SERVER_TOUR_LAST_VIEWED[player.uniqueId] = it.first
                                 }
                             }
                         }

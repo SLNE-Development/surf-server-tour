@@ -5,6 +5,7 @@ package dev.slne.surf.servertour.dialogs
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.servertour.dialogs.own.createOwnTourDialog
 import dev.slne.surf.servertour.dialogs.own.review.showcase.createShowcaseTourDialog
+import dev.slne.surf.servertour.dialogs.own.review.showcase.createSortShowcaseToursDialog
 import dev.slne.surf.servertour.dialogs.own.review.submitted.createSubmittedTourDialog
 import dev.slne.surf.servertour.dialogs.own.review.submitted.createViewSubmittedToursDialog
 import dev.slne.surf.servertour.entry.TourEntry
@@ -37,6 +38,7 @@ fun serverTourDialog(owner: UUID) = dialog {
 
             if (owner.hasPermission(ServerTourPermissionRegistry.REVIEWER)) {
                 action(createViewSubmittedToursButton())
+                action(createSortSubmittedToursButton())
             }
 
             if (owner.hasPermission(ServerTourPermissionRegistry.SHOWCASE)) {
@@ -44,7 +46,9 @@ fun serverTourDialog(owner: UUID) = dialog {
             }
 
             SERVER_TOUR_LAST_VIEWED[owner]?.let {
-                action(createResumeTourButton(it))
+                if (owner.hasPermission(ServerTourPermissionRegistry.SHOWCASE)) {
+                    action(createResumeTourButton(it))
+                }
             }
         }
     }
@@ -105,6 +109,19 @@ private fun createViewSubmittedToursButton(): ActionButton = actionButton {
         playerCallback { player ->
             plugin.launch {
                 player.showDialog(createViewSubmittedToursDialog())
+            }
+        }
+    }
+}
+
+private fun createSortSubmittedToursButton(): ActionButton = actionButton {
+    label { variableValue("Einreichungen sortieren") }
+    tooltip { info("Sortiere alle genehmigten Einreichungen") }
+
+    action {
+        playerCallback { player ->
+            plugin.launch {
+                player.showDialog(createSortShowcaseToursDialog())
             }
         }
     }
